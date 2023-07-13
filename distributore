@@ -1,5 +1,6 @@
 from time import sleep
 
+#contiene saldo ed id utente univoco
 class Conto:
     def __init__(self, saldo, id):
         self.saldo = saldo
@@ -8,7 +9,7 @@ class Conto:
     def __str__(self):
         return (f"\nIl saldo del conto è: {self.saldo}")
 
-
+#contiene un elenco di conti
 class Distributore:
     def __init__(self, conti):
         self.conti = conti
@@ -47,13 +48,18 @@ class Distributore:
             if el.id == id_attivo:
                 print(f"\nIl tuo saldo è di € {el.saldo}")
 
-
+#inizializza due utenti di tipo class Conto
 id1 = Conto(2.0, 1)
 id2 = Conto(7.5, 2)
+
+#crea una lista e ci inserisce i due id conti creati
 lista_conti = []
 lista_conti.append(id1)
 lista_conti.append(id2)
+
+#inserisce in un elenco di tipo Distributore la lista appena creata di conti di tipo Conto
 distr1 = Distributore(lista_conti)
+
 
 dizio_bevande = {
     "Caffe"      : 0.80,
