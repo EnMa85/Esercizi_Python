@@ -1,0 +1,123 @@
+import pickle
+
+class Contocorrente:
+    def __init__(self, username, id, saldo):
+        self.username = username
+        self.id = id
+        self.saldo = saldo
+        self.movimenti = []
+
+    def __str__(self):
+        return f"Username: {self.username}, ID conto: {self.id}, Saldo: € {self.saldo}\n"
+
+class Bancomat:
+    def __init__(self, conti):
+        self.conti = conti
+
+    def __str__(self):
+        return self.conti
+
+    def prelievo(self, cifra, id):
+        for el in self.conti:
+            if el.id == id:
+                if el.saldo >= cifra:
+                    el.saldo -= cifra
+                    el.movimenti.append(f"- {cifra}\n")
+                else: print("\nCifra non disponibile.")
+                print(f"\nIl saldo aggiornato è di € {el.saldo}")
+
+    def versamento(self, cifra, id):
+        for el in self.conti:
+            if el.id == id:
+                el.saldo += cifra
+                el.movimenti.append(f"+ {cifra}\n")
+                print(f"\nIl saldo aggiornato è di € {el.saldo}")
+
+    def bonifico(self, cifra, mittente, destinatario):
+        if input("\nScegli 1 per bonifico veloce, un tasto qualsiasi per bonifico normale: ") == "1":
+            comm = 2.50
+        else: comm = 1.10
+        for el in self.conti:
+            if el.id == destinatario:
+                el.saldo += cifra
+        for el in self.conti:
+            if el.id == mittente:
+                if el.saldo >= cifra + comm:
+                    el.saldo = el.saldo - cifra - comm
+                    el.movimenti.append(f"- {cifra}, - comm di {comm}\n")
+                    print(f"\nIl saldo aggiornato è di € {el.saldo}")
+                else: print("\nCifra non disponibile.")
+
+    def stampa_saldo(self, id):
+        for el in self.conti:
+            if el.id == id:
+                print(f"\nIl saldo aggiornato è di € {el.saldo}")
+
+    def stampa_movimenti(self, id):
+        for el in self.conti:
+            if el.id == id:
+                print("\nLa lista dei movimenti: ")
+                for mov in el.movimenti:
+                    print(mov)
+
+
+'''
+utente1 = Contocorrente("User 1", "01", int(10000))
+utente2 = Contocorrente("User 2", "02", int(30000))
+lista_utenti = []
+lista_utenti.append(utente1)
+lista_utenti.append(utente2)
+bancomat = Bancomat(lista_utenti)
+'''
+
+print("Benvenuto nella tua home banking.\n")
+
+f = open("bancomat.pkl", "rb")
+unpickler = pickle.Unpickler(f)
+lista_utenti = unpickler.load()
+bancomat = Bancomat(lista_utenti)
+
+validation = False
+idcode = 0
+while validation == False:
+    user = input("digita il tuo username: ")
+    idcode = input("\ndigita il tuo ID utente: ")
+    for el in lista_utenti:
+        if user == el.username and idcode == el.id:
+            validation = True
+            print("\nUtente convalidato.")
+    if validation == False:
+        print("\nUtente non trovato. Riprova.\n")
+
+scelta = 0
+if validation == True:
+    while scelta != "6":
+        scelta = input("\nDigitare\n"
+                       "1 per prelevare\n"
+                       "2 per versare\n"
+                       "3 per effettuare un bonifico\n"
+                       "4 per visualizzare il saldo\n"
+                       "5 per visualizzare l'elenco movimenti\n"
+                       "6 per terminare: ")
+        if scelta == "1":
+            importo = int(input("\nInserisci la cifra da prelevare: "))
+            bancomat.prelievo(importo, idcode)
+        elif scelta == "2":
+            importo = int(input("\nInserisci la cifra da versare: "))
+            bancomat.versamento(importo, idcode)
+        elif scelta == "3":
+            verso = input("\nInserisci l'id del destinatario: ")
+            importo = int(input("Inserisci l'importo del bonifico: "))
+            bancomat.bonifico(importo, idcode, verso)
+        elif scelta == "4":
+            bancomat.stampa_saldo(idcode)
+        elif scelta == "5":
+            bancomat.stampa_movimenti(idcode)
+        elif scelta == "6":
+            pass
+        else: print("Scelta non valida.")
+
+print("\nHo effettuato il logout.\n")
+f = open("bancomat.pkl", "wb")
+pickle.dump(lista_utenti, f)
+f.close()
