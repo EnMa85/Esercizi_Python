@@ -1,3 +1,11 @@
+'''
+creare un programma distributore ogni ditributore ha associato un oggetto di tipo conto con proprietà saldo che rappresenta il saldo del conto, 
+e id che rappresenta l'id del conto. l'oggetto distributore può invece: erogare caffè, erogare the, erogare acqua, erogare cioccolata a prezzi variabili, 
+versare dei soldi nel conto. Il programma nel menu utente permette anche di creare un nuovo id con un nuovo saldo
+
+'''
+
+#importa metodo che sospende il programma per n secondi
 from time import sleep
 
 #contiene saldo ed id utente univoco
@@ -17,13 +25,17 @@ class Distributore:
     def __str__(self):
         return self.conti
 
+    #riceve in ingresso un dizionario con bevande e prezzi, il codice dell'elemento scelto, l'id dell'utente loggato
     def eroga(self, menu, elemento, id_attivo):
         indice = 0
+        #identifica la bevanda
         for bev, pr in menu.items():
             indice += 1
             if indice == elemento:
+                #identifica l'utente attivo tramite id
                 for conto in self.conti:
                     if conto.id == id_attivo:
+                        #verifica che il saldo sia sufficiente
                         if(conto.saldo >= pr):
                             print(f"\nErogazione {bev} in corso...")
                             conto.saldo -= pr
@@ -75,15 +87,19 @@ scelta = 0
 validation = False
 idcode = 0
 
+#ripete la sequenza finchè non viene inserito un id utente valido
 while scelta != "1" and scelta != "2":
     scelta = input("\nDigita 1 per creare un nuovo utente, 2 per accedere con il tuo ID: ")
     if scelta == "1":
+        #crea un nuovo ID e poi imposta la scelta su 2 per slittare l'utente nella fase di login
         nuovo_id = distr1.nuovo_id()
         print(f"\nNuovo utente creato. Il tuo ID è {nuovo_id}.\nInserisci la chiave ed effettua un versamento per effettuare altre operazioni: \n")
         scelta = "2"
 
     if scelta == "2":
+        #ripete la sequenza finchè non riconosce un utente valido
         while validation == False:
+            #salva l'id dell'utente corrente per passarlo ai vari metodi
             idcode = int(input("\ninserisci la tua chiave ID: "))
             for el in lista_conti:
                 if idcode == el.id:
@@ -96,6 +112,7 @@ cont = 0
 scelta = 0
 bevanda = 0
 
+#dopo aver validato l'utente, verifica nuovamente che lo stato sia validato e stampa il menù di scelta
 if validation == True:
     while scelta != "4":
         scelta = input("\nDigitare\n"
@@ -103,7 +120,8 @@ if validation == True:
                        "2 per effettuare un versamento nel tuo conto\n"
                        "3 per visualizzare il tuo saldo\n"
                        "4 per terminare: ")
-        
+
+        #per ogni scelta passerà al metodo l'id dell'utente corrente precedentemente salvato
         if scelta == "1":
             print("\n")
             for bevanda, prezzo in dizio_bevande.items():
