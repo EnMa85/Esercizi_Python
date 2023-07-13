@@ -1,0 +1,87 @@
+import pickle
+
+class Libro:
+    def __init__(self, titolo, autore, anno, stato="disponibile"):
+        self.titolo = titolo
+        self.autore = autore
+        self.anno = anno
+        self.stato = stato
+
+    def __str__(self):
+        return f"{self.titolo}, di {self.autore}, pubblicato nel {self.anno}, stato: {self.stato}."
+
+class Biblioteca:
+    def __init__(self):
+        self.libri = []
+
+    def __str__(self):
+        return self.libri
+
+    def stampa(self):
+        print(self.libri)
+
+
+cont = 0
+scelta = 0
+cont_lib = 0
+
+libro1 = Libro("titolo1", "autore1", "anno1",)
+libro2 = Libro("titolo2", "autore2", "anno2","non disponibile")
+biblio = []
+biblio.append(libro1)
+biblio.append(libro2)
+
+print("Ecco l'elenco dei libri:")
+
+for el in biblio:
+    print(el)
+
+while scelta != "6":
+    scelta = input("\nCosa vuoi fare?\n"
+                   "Premere\n"
+                   "1 per aggiungere un nuovo libro\n"
+                   "2 per prenotare un libro\n"
+                   "3 per ricercare un autore\n"
+                   "4 per salvare la biblioteca su un file\n"
+                   "5 per leggere la biblioteca salvata\n"
+                   "6 per terminare:  ")
+    if scelta == "1":
+        tit = input("\nInserisci il titolo: ")
+        aut = input("\nInserisci l'autore: ")
+        ann = input("\nInserisci l'anno di pubblicazione: ")
+        disp = input("\nInserisci lo stato, disponibile o non disponibile:  ")
+        biblio.append(Libro(tit, aut, ann, disp))
+    elif scelta == "2":
+        prenota = input("\nInserisci il titolo del libro da prenotare:  ")
+        for libro in biblio:
+            if libro.titolo == prenota and libro.stato == "disponibile":
+                print("\nHo prenotato il libro")
+                cont_lib += 1
+                libro.stato = "non disponibile"
+        if cont_lib == 0:
+            print("\nIl libro non è disponibile.")
+    elif scelta == "3":
+        stampautore = input("\nInserisci l'autore da cercare: ")
+        for libro in biblio:
+            if libro.autore == stampautore:
+                print(f"\nHo trovato {libro.titolo}, del {libro.anno}")
+                cont += 1
+        if cont == 0:
+            print("\nAutore non presente.")
+    elif scelta == "4":
+        elenco = open("testOggetto.pkl", "wb")
+        pickle.dump(biblio, elenco)
+        elenco.close()
+        print("\nSalvataggio effettuato.")
+    elif scelta == "5":
+        elenco = open("testOggetto.pkl", "rb")
+        unpickler = pickle.Unpickler(elenco)
+        biblio = unpickler.load()
+        print("\nEcco l'elenco dei libri:\n")
+        for riga in biblio:
+            print(riga)
+        elenco.close()
+    elif scelta == "6":
+        exit
+    else:
+        print("Scelta non valida.")
