@@ -1,0 +1,24 @@
+'''
+Da una lista data di 12 temperature espresse in decimali, stampa la media e visualizza, 
+per ogni elemento, se è superiore, inferiore o uguale alla media.
+'''
+
+temperature = {22.0, 25.1, 31.0, 37.9, 34.0, 19.0, 13.2, 12.2, 15.5, 15.4, 35.5, 37.3}
+cont = 0
+media = 0
+somma = 0
+
+for el in temperature:
+    somma += el
+    cont += 1
+
+media = somma/cont
+print(f"La media è {round(media, 2)}.\n")
+
+for el in temperature:
+    if el < media:
+        print(f"Il valore {el} è inferiore alla media.\n")
+    elif el > media:
+        print(f"Il valore {el} è superiore alla media.\n")
+    elif el == media:
+        print("Il valore è uguale alla media.\n")
