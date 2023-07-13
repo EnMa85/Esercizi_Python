@@ -1,8 +1,8 @@
 '''
-creare un programma distributore ogni ditributore ha associato un oggetto di tipo conto con proprietà saldo che rappresenta il saldo del conto, 
-e id che rappresenta l'id del conto. l'oggetto distributore può invece: erogare caffè, erogare the, erogare acqua, erogare cioccolata a prezzi variabili, 
+Creare un programma distributore ogni ditributore ha associato un oggetto di tipo conto con proprietà saldo 
+che rappresenta il saldo del conto, e id che rappresenta l'id del conto. 
+L'oggetto distributore può invece: erogare caffè, erogare the, erogare acqua, erogare cioccolata a prezzi variabili, 
 versare dei soldi nel conto. Il programma nel menu utente permette anche di creare un nuovo id con un nuovo saldo
-
 '''
 
 #importa metodo che sospende il programma per n secondi
