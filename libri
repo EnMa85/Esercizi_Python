@@ -1,3 +1,20 @@
+'''
+Scriviamo una classe libro.
+Ogni libro ha un titolo, un autore e un anno di pubblicazione, e uno stato inizialmente inizializzato come disponibile
+Implementare il metodo __str__ il metodo __init__  
+Successivamente costruiamo una classe biblioteca che istanzia una lista di libri e implementa i metodi per:
+aggiungere un nuovo libro alla lista
+una funzione prenota() che cerca il libro dal titolo e cambia lo stato del libro da disponibile a non disponibile
+una funzione stampa() che stampa la lista
+infine creare un menu a scelta dell’utente in cui si può
+aggiungere un nuovo libro
+prenotare un libro dal titolo
+ricercare i libri per autore
+salvare la biblioteca su un file (scrittura wb)
+leggere la biblioteca salvata (lettura rb)
+uscire dal programma
+'''
+
 import pickle
 
 class Libro:
@@ -11,14 +28,25 @@ class Libro:
         return f"{self.titolo}, di {self.autore}, pubblicato nel {self.anno}, stato: {self.stato}."
 
 class Biblioteca:
-    def __init__(self):
-        self.libri = []
+    def __init__(self, libri):
+        self.libri = libri
 
     def __str__(self):
         return self.libri
 
     def stampa(self):
-        print(self.libri)
+        for el in self.libri:
+            print(el)
+
+    def prenota (self, nome):
+        prenotazione = False
+        for libro in self.libri:
+            if libro.titolo == nome and libro.stato == "disponibile":
+                print("\nHo prenotato il libro")
+                libro.stato = "non disponibile"
+                prenotazione = True
+        if prenotazione == False:
+            print("\nIl libro non è disponibile.")
 
 
 cont = 0
@@ -30,15 +58,13 @@ libro2 = Libro("titolo2", "autore2", "anno2","non disponibile")
 biblio = []
 biblio.append(libro1)
 biblio.append(libro2)
+biblioteca = Biblioteca(biblio)
 
 print("Ecco l'elenco dei libri:")
-
-for el in biblio:
-    print(el)
+biblioteca.stampa()
 
 while scelta != "6":
-    scelta = input("\nCosa vuoi fare?\n"
-                   "Premere\n"
+    scelta = input("\nCosa vuoi fare? Premi:\n"
                    "1 per aggiungere un nuovo libro\n"
                    "2 per prenotare un libro\n"
                    "3 per ricercare un autore\n"
@@ -52,14 +78,7 @@ while scelta != "6":
         disp = input("\nInserisci lo stato, disponibile o non disponibile:  ")
         biblio.append(Libro(tit, aut, ann, disp))
     elif scelta == "2":
-        prenota = input("\nInserisci il titolo del libro da prenotare:  ")
-        for libro in biblio:
-            if libro.titolo == prenota and libro.stato == "disponibile":
-                print("\nHo prenotato il libro")
-                cont_lib += 1
-                libro.stato = "non disponibile"
-        if cont_lib == 0:
-            print("\nIl libro non è disponibile.")
+        biblioteca.prenota(input("\nInserisci il titolo del libro da prenotare:  "))
     elif scelta == "3":
         stampautore = input("\nInserisci l'autore da cercare: ")
         for libro in biblio:
