@@ -1,0 +1,74 @@
+'''
+Creare una classe Canzone che rappresenta canzoni
+Ogni canzone ha un titolo, un autore e l’anno di pubblicazione
+La classe implementa il metodo __init__
+e il metodo __str__
+Creare una lista di canzoni
+Creare quindi all’interno della stessa pagina un programma che chiede all’utente cosa vuole fare:
+1 aggiungere una nuova canzone
+2 cercare una canzone dalla lista per titolo
+3 stampare tutte le canzoni di un autore
+4 rimuovere una canzone dal titolo
+5 uscire dal programma
+'''
+
+class Canzone:
+    def __init__(self, titolo, autore, anno):
+        self.titolo = titolo
+        self.autore = autore
+        self.anno = anno
+
+    def __str__(self):
+        return f"{self.titolo}, di {self.autore}, dell'anno {self.anno}."
+
+cont = 0
+scelta = 0
+
+canz1 = Canzone("titolo1", "autore1", "anno1")
+canz2 = Canzone("titolo2", "autore2", "anno2")
+canzoni = []
+canzoni.append(canz1)
+canzoni.append(canz2)
+
+
+while scelta != "5":
+    scelta = input("\nCosa vuoi fare? Premere:\n"
+                   "1 per aggiungere una nuova canzone\n"
+                   "2 per cercare una canzone per titolo\n"
+                   "3 per stampare tutte le canzoni di un autore\n"
+                   "4 per rimuovere una canzone dal titolo\n"
+                   "5 per uscire dal programma:  ")
+
+    if scelta == "1":
+        tit = input("\nInserisci il titolo: ")
+        aut = input("\nInserisci l'autore: ")
+        ann = input("\nInserisci l'anno: ")
+        canzoni.append(Canzone(tit, aut, ann))
+
+    elif scelta == "2":
+        cerca = input("Inserisci il titolo da cercare: ")
+        for el in canzoni:
+            if cerca == el.titolo:
+                print(f"La canzone è: {el.titolo}, di {el.autore}, del {el.anno}")
+                cont += 1
+        if cont == 0:
+            print("\nLa canzone non è presente")
+
+    elif scelta == "3":
+        stampautore = input("Inserisci l'autore: ")
+        print("\nLe sue canzoni: ")
+        for el in canzoni:
+            if el.autore == stampautore:
+                print(f"{el.titolo}, del {el.anno}")
+
+    elif scelta == "4":
+        cancella = input("Inserisci il titolo della canzone: ")
+        for el in canzoni:
+            if cancella == el.titolo:
+                canzoni.remove(el)
+                print("\nCanzone cancellata.")
+
+    elif scelta =="5":
+        exit()
+
+    else: print("Scelta non valida.")
