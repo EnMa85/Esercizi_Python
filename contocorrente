@@ -1,3 +1,11 @@
+'''
+scrivere una classe contocorrente che rappresenta un conto corrente bancario. Il conto è rappresentato da uno username, un id e un saldo. 
+Successivamente scrivere la classe bancomat e che inizializza una lista di contocorrente e permette di prelevare dal conto, versare sul conto, 
+fare un bonifico, visualizzare il saldo (plus se nel saldo riusciamo a visualizzare la lista movimenti). 
+Inoltre scrivere un programma che permette all'utente di usufruire del bancomat dopo aver digitato lo username e l'id corretto associato al conto
+'''
+
+#libreria per gestire i files esterni
 import pickle
 
 class Contocorrente:
@@ -17,11 +25,15 @@ class Bancomat:
     def __str__(self):
         return self.conti
 
+    #prende in ingresso l'importo e l'id utente
     def prelievo(self, cifra, id):
+        #scorre gli id fino a trovare il conto corrispondente
         for el in self.conti:
             if el.id == id:
+                #dopo averlo trovato verifica che ci sia un saldo sufficiente ed effettua l'operazione
                 if el.saldo >= cifra:
                     el.saldo -= cifra
+                    #salva sulla lista movimenti, trattandolo come stringa, il movimento appena effettuato
                     el.movimenti.append(f"- {cifra}\n")
                 else: print("\nCifra non disponibile.")
                 print(f"\nIl saldo aggiornato è di € {el.saldo}")
@@ -33,13 +45,17 @@ class Bancomat:
                 el.movimenti.append(f"+ {cifra}\n")
                 print(f"\nIl saldo aggiornato è di € {el.saldo}")
 
+    #prende in ingresso, oltre cifra ed id utente, anche il destinatario
     def bonifico(self, cifra, mittente, destinatario):
+        #chiede il tipo di bonifico ed associa la relativa commissione
         if input("\nScegli 1 per bonifico veloce, un tasto qualsiasi per bonifico normale: ") == "1":
             comm = 2.50
         else: comm = 1.10
-        for el in self.conti:
-            if el.id == destinatario:
-                el.saldo += cifra
+        #verifica se il destinatario fa parte della stessa banca, in tal caso va a variare anche il saldo del destinatario
+        for dest in self.conti:
+            if dest.id == destinatario:
+                dest.saldo += cifra
+        #aggancia il mittente, verifica se c'è capienza, effettua il movimento e lo salva nella lista movimenti
         for el in self.conti:
             if el.id == mittente:
                 if el.saldo >= cifra + comm:
@@ -60,21 +76,31 @@ class Bancomat:
                 for mov in el.movimenti:
                     print(mov)
 
-
+#Nella prima esecuzione crea alcuni utenti e li salva nel file esterno. 
+#Per le successive esecuzioni eliminiamo (o commentiamo) queste assegnazioni in quanto già presenti nel file
 '''
+#assegnazioni commentate
 utente1 = Contocorrente("User 1", "01", int(10000))
 utente2 = Contocorrente("User 2", "02", int(30000))
 lista_utenti = []
 lista_utenti.append(utente1)
 lista_utenti.append(utente2)
 bancomat = Bancomat(lista_utenti)
+#apre il file in scrittura e gli salva la lista utenti inizializzati nel codice (solo la prima volta)
+f = open("bancomat.pkl", "wb")
+pickle.dump(lista_utenti, f)
+f.close()
+#fine assegnazioni commentate
 '''
 
 print("Benvenuto nella tua home banking.\n")
 
+#apre il file in lettura
 f = open("bancomat.pkl", "rb")
 unpickler = pickle.Unpickler(f)
+#salva una copia del file in lista_utenti
 lista_utenti = unpickler.load()
+#assegna la lista utenti ad una variabile di tipo classe Bancomat
 bancomat = Bancomat(lista_utenti)
 
 validation = False
@@ -118,6 +144,7 @@ if validation == True:
         else: print("Scelta non valida.")
 
 print("\nHo effettuato il logout.\n")
+#apre il file in scrittura e salva la lista utenti aggiornata
 f = open("bancomat.pkl", "wb")
 pickle.dump(lista_utenti, f)
 f.close()
