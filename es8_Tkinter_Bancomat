@@ -1,0 +1,207 @@
+import pickle
+
+class Contocorrente:
+    def __init__(self, username, id, saldo):
+        self.username = username
+        self.id = id
+        self.saldo = saldo
+        self.movimenti = []
+
+    def __str__(self):
+        return f"Username: {self.username}, ID conto: {self.id}, Saldo: € {self.saldo}\n"
+
+class Bancomat:
+    def __init__(self, conti):
+        self.conti = conti
+
+    def __str__(self):
+        return self.conti
+
+    def importo(self, id, operazione):
+        pag_importo = tk.Tk()
+        pag_importo.geometry('270x200')
+        importolbl = tk.Label(pag_importo, text="Inserisci importo", font=("arial", 12, "bold"), width=15, height=5)
+        importolbl.grid(column=0, row=0)
+        importo = tk.Entry(pag_importo, width=15)
+        importo.grid(column=1, row=0)
+        if operazione == 1:
+            btnconferma = tk.Button(pag_importo, text="CONFERMA", command=lambda: prelievo(id),
+                                    fg="black", width=20, height=2, font=("arial", 12, "bold"))
+            btnconferma.grid(column=0, row=2, columnspan=2)
+        if operazione == 2:
+            btnconferma = tk.Button(pag_importo, text="CONFERMA", command=lambda: versamento(id),
+                                    fg="black", width=20, height=2, font=("arial", 12, "bold"))
+            btnconferma.grid(column=0, row=2, columnspan=2)
+        if operazione == 3:
+            btnconferma = tk.Button(pag_importo, text="CONFERMA", command=lambda: destinatario(id),
+                                    fg="black", width=20, height=2, font=("arial", 12, "bold"))
+            btnconferma.grid(column=0, row=2, columnspan=2)
+
+        def prelievo(user):
+            euro = float(str(importo.get()))
+            for utente in self.conti:
+                if utente.id == user:
+                    utente.saldo = utente.saldo - euro
+                    utente.movimenti.append(f"Prelievo: -{euro}\n")
+                    importolbl.configure(text=f"Il saldo aggiornato è di € {utente.saldo}.", width=25, height=5)
+                    importolbl.grid(column=0, row=0, columnspan=2)
+                    importo.grid_remove()
+                    btnconferma.grid(column=0, row=2, columnspan=2)
+                    btnconferma.configure(text="TORNA AL MENU'", command=lambda: pag_importo.destroy())
+
+        def versamento(user):
+            euro = float(str(importo.get()))
+            for utente in self.conti:
+                if utente.id == user:
+                    utente.saldo = utente.saldo + euro
+                    utente.movimenti.append(f"Versamento: +{euro}\n")
+                    importolbl.configure(text=f"Il saldo aggiornato è di € {utente.saldo}.", width=25, height=5)
+                    importolbl.grid(column=0, row=0, columnspan=2)
+                    importo.grid_remove()
+                    btnconferma.grid(column=0, row=2, columnspan=2)
+                    btnconferma.configure(text="TORNA AL MENU'", command=lambda: pag_importo.destroy())
+
+        def destinatario(user):
+            euro = float(str(importo.get()))
+            importo.grid_remove()
+            importolbl.configure(text="Inserisci ID destinatario", width=20)
+            importolbl.grid(column=0, row=0)
+            dest = tk.Entry(pag_importo, width=10)
+            dest.grid(column=1, row=0)
+            btnconferma.configure(command=lambda: bonifico(user, euro))
+            btnconferma.grid(column=0, row=2, columnspan=2)
+
+            def bonifico(mittente, cifra):
+                comm = 1.50
+                destinatario = int(str(dest.get()))
+                dest.grid_remove()
+                for utente in self.conti:
+                    if utente.id == destinatario:
+                        utente.saldo = utente.saldo + cifra
+                        utente.movimenti.append(f"Bonifico in entrata: +{cifra}\n")
+                for utente in self.conti:
+                    if utente.id == mittente:
+                        if utente.saldo >= cifra + comm:
+                            utente.saldo = utente.saldo - cifra - comm
+                            utente.movimenti.append(f"Bonifico in uscita: -{cifra}, comm -{comm}\n")
+                            importolbl.configure(text=f"Il saldo aggiornato è di € {utente.saldo}.", width=25, height=5)
+                            importolbl.grid(column=0, row=0, columnspan=2)
+                            btnconferma.grid(column=0, row=2, columnspan=2)
+                            btnconferma.configure(text="TORNA AL MENU", command=lambda: pag_importo.destroy())
+                        else:
+                            messagebox.showinfo("Accesso negato", "Il saldo non è sufficiente.")
+                            pag_importo.destroy()
+
+    def stampa_saldo(self, id):
+        for el in self.conti:
+            if el.id == id:
+                messagebox.showinfo("Visualizza saldo", f"\nIl saldo aggiornato è di € {el.saldo}")
+
+    def stampa_movimenti(self, id):
+        for el in self.conti:
+            if el.id == id:
+                messagebox.showinfo("Lista movimenti", f"\nLa lista dei tuoi movimenti: {el.movimenti}")
+
+def menu(utente):
+    pag_menu = tk.Tk()
+    pag_menu.geometry('520x420')
+
+   # lista delle opzioni
+    lbl_menu = tk.Label(pag_menu, text="Seleziona un'operazione.\n",
+                        width=40, height=4, font=("arial", 16, "bold"))
+    lbl_menu.grid(column=0, row=0, columnspan=2)
+
+    btnpreleva = tk.Button(pag_menu, text="PRELIEVO", fg="black",
+                           command=lambda: bancomat.importo(utente, 1),
+                           width=20, height=4, font=("arial", 12, "bold"))
+    btnpreleva.grid(column=0, row=1)
+
+    btnversa = tk.Button(pag_menu, text="VERSAMENTO", fg="black",
+                         command=lambda: bancomat.importo(utente, 2),
+                         width=20, height=4, font=("arial", 12, "bold"))
+    btnversa.grid(column=1, row=1)
+
+    btnbonifico = tk.Button(pag_menu, text="BONIFICO", fg="black",
+                            command=lambda: bancomat.importo(utente, 3),
+                            width=20, height=4, font=("arial", 12, "bold"))
+    btnbonifico.grid(column=0, row=2)
+    btnsaldo = tk.Button(pag_menu, text="SALDO", fg="black",
+                         command=lambda: bancomat.stampa_saldo(utente),
+                         width=20, height=4, font=("arial", 12, "bold"))
+    btnsaldo.grid(column=1, row=2)
+
+    btnelenco = tk.Button(pag_menu, text="ELENCO", fg="black",
+                          command=lambda: bancomat.stampa_movimenti(utente),
+                          width=20, height=4, font=("arial", 12, "bold"))
+    btnelenco.grid(column=0, row=3)
+    btntermina = tk.Button(pag_menu, text="ESCI", fg="black",
+                           command=pag_menu.destroy,
+                           width=20, height=4, font=("arial", 12, "bold"))
+    btntermina.grid(column=1, row=3)
+    pag_menu.rowconfigure(4, weight=2)  # rigavuota
+
+    pag_menu.mainloop()
+
+def accedi():
+    accesso = False
+    user = username.get()
+    code = id.get()
+    for utente in bancomat.conti:
+        if user == utente.username and code == utente.id:
+            messagebox.showinfo("Accesso effettuato", "Utente convalidato...")
+            accesso = True
+            menu(code)
+            pag_inizio.destroy()
+    if not accesso:
+        messagebox.showinfo("Accesso negato", "Utente non trovato. Riprova.")
+
+'''  Da eseguire solo al primo avvio per memorizzare nel file i conti inizializzati
+utente1 = Contocorrente("User 1", "01", int(10000))
+utente2 = Contocorrente("User 2", "02", int(30000))
+lista_utenti = []
+lista_utenti.append(utente1)
+lista_utenti.append(utente2)
+bancomat = Bancomat(lista_utenti)
+
+f = open("bancomat.pkl", "wb")
+pickle.dump(lista_utenti, f)
+f.close()
+'''
+
+print("Benvenuto nella tua home banking.\n")
+
+f = open("bancomat.pkl", "rb")
+unpickler = pickle.Unpickler(f)
+lista_utenti = unpickler.load()
+bancomat = Bancomat(lista_utenti)
+
+import tkinter
+from tkinter import *
+import tkinter as tk
+from tkinter import messagebox
+
+pag_inizio = tk.Tk()
+# pag_inizio.geometry('520x320')
+lbl_benvenuto = tk.Label(pag_inizio, text="Benvenuto!\nDigita le tue credenziali per accedere.\n",
+                         width=40, height=4, font=("arial", 16, "bold"))
+lbl_benvenuto.grid(column=0, row=0, columnspan=2)
+
+lbl_username = tk.Label(pag_inizio, text="Inserisci username", width=18, height=3, font=("arial", 11, "bold"))
+lbl_username.grid(column=0, row=2)
+username = tk.Entry(pag_inizio, width=30)
+username.grid(column=1, row=2)
+lbl_id = tk.Label(pag_inizio, text="Inserisci ID", font=("arial", 11, "bold"), width=18, height=3)
+lbl_id.grid(column=0, row=3)
+id = tk.Entry(pag_inizio, width=30)
+id.grid(column=1, row=3)
+pag_inizio.rowconfigure(4, weight=1)  # rigavuota
+btnaccedi = tk.Button(pag_inizio, text="ACCEDI", fg="black", command=lambda: accedi(),
+                      width=30, height=3, font=("arial", 12, "bold"))
+btnaccedi.grid(column=0, row=5, columnspan=2)
+pag_inizio.rowconfigure(6, weight=1)  # rigavuota
+
+pag_inizio.mainloop()
+
+f = open("bancomat.pkl", "wb")
+pickle.dump(lista_utenti, f)
+f.close()
