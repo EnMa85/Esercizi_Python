@@ -1,0 +1,219 @@
+import tkinter
+from tkinter import messagebox
+from tkinter import *
+import tkinter as tk
+import random
+from time import sleep
+
+class Conto:
+    def __init__(self, saldo, id, password):
+        self.saldo = saldo
+        self.id = id
+        self.password = password
+
+    def __str__(self):
+        return (f"\nIl saldo del conto è: {self.saldo}")
+
+class Distributore:
+    def __init__(self, conti):
+        self.conti = conti
+
+    def __str__(self):
+        return self.conti
+
+    def nuovo_id(self):
+        pag_nvid = tk.Tk()
+        pag_nvid.geometry('400x300')
+        nuovoid = random.randint(10, 99)
+        nuovapass = random.randint(100, 999)
+        nuovo_utente = Conto(0, nuovoid, nuovapass)
+        self.conti.append(nuovo_utente)
+        rigaid = tk.Label(pag_nvid, text=f"\nChiavetta attivata!\n\nEcco le tue credenziali.\n\nID: {nuovoid}    "
+                                         f"Password: {nuovapass}\n\n", font=("arial", 11, "bold"), width=45, height=10)
+        rigaid.grid(column=0, row=0)
+        btnreturn = tk.Button(pag_nvid, text="\nRitorna\nalla pagina principale\n", fg="black",
+                              command=lambda: pag_nvid.destroy(), font=("arial", 12, "bold"), width=25)
+        btnreturn.grid(column=0, row=1)
+        pag_nvid.mainloop()
+
+
+    def versamento(self, id_attivo):
+        pag_vers = Tk()
+        verslbl = tk.Label(pag_vers, text="Inserisci importo", font=("arial", 10, "bold"), width=40, height=4)
+        verslbl.grid(column=0, row=0)
+
+        importo = tk.Entry(pag_vers, width=40)
+        importo.grid(column=0, row=1)
+        pag_vers.rowconfigure(2, weight=5)  # riga vuota
+        btnricarica = tk.Button(pag_vers, text="\nRicarica\n", fg="black",
+                                command=lambda: [conferma_vers(id_attivo), pag_vers.destroy()],
+                                width=30, height=3, font=("arial", 12, "bold"))
+        btnricarica.grid(column=0, row=3)
+
+        def conferma_vers(user):
+            ricarica = int(str(importo.get()))
+            for utente in self.conti:
+                if utente.id == user:
+                    utente.saldo = utente.saldo + ricarica
+                    distr1.menu(user)
+
+
+    def menu(self, utente_attivo):
+        pag_menu = tk.Tk()
+        pag_menu.geometry('520x500')
+        for utente in self.conti:
+            if utente.id == utente_attivo:
+                saldo_attivo = round(utente.saldo, 2)
+                sceltalbl = tk.Label(pag_menu, text=f"\nBenvenuto!\nIl tuo credito è di € {saldo_attivo}\n",
+                                     width=50, height=5, font=("arial", 13, "bold"))
+                sceltalbl.grid(column=0, row=0, columnspan=2)
+                btnversa = tk.Button(pag_menu, text="\nClicca qui per effettuare una ricarica.\n", fg="black",
+                                    command=lambda: [distr1.versamento(utente_attivo), pag_menu.destroy()],
+                                    width=30, height=3, font=("arial", 12, "bold"))
+                btnversa.grid(column=0, row=1, columnspan=2)
+
+                pag_menu.rowconfigure(2, weight=2) #riga vuota
+
+                # lista delle bevande
+                btncaffe = tk.Button(pag_menu, text="CAFFE - € 0,80", fg="black",
+                                     command=lambda: [distr1.caffe(utente_attivo, sceltalbl)],
+                                     width=20,height=4, font=("arial", 12, "bold"))
+                btncaffe.grid(column=0, row=4)
+
+                btnthe = tk.Button(pag_menu, text="THE - € 1,20", fg="black",
+                                   command=lambda: [distr1.the(utente_attivo, sceltalbl)],
+                                   width=20, height=4, font=("arial", 12, "bold"))
+                btnthe.grid(column=1, row=4)
+                btnacqua = tk.Button(pag_menu, text="ACQUA - € 1,00", fg="black",
+                                     command=lambda: [distr1.acqua(utente_attivo, sceltalbl)],
+                                     width=20, height=4, font=("arial", 12, "bold"))
+                btnacqua.grid(column=0, row=5)
+                btnciocco = tk.Button(pag_menu, text="CIOCCOLATA - € 1,50", fg="black",
+                                      command=lambda: [distr1.cioccolata(utente_attivo, sceltalbl)],
+                                     width=20, height=4, font=("arial", 12, "bold"))
+                btnciocco.grid(column=1, row=5)
+
+                pag_menu.rowconfigure(6, weight=2)  # riga vuota
+
+                btnesci = tk.Button(pag_menu, text="Effettua il logout", fg="black", command=lambda: pag_menu.destroy(),
+                                    width=25, height=3, font=("arial", 12, "bold"))
+                btnesci.grid(column=0, row=7, columnspan=2)
+
+                pag_menu.rowconfigure(8, weight=2)  # riga vuota
+
+
+    def caffe(self, id_attivo, lbl):
+        prezzo = 0.80
+        for utente in self.conti:
+            if utente.id == id_attivo:
+                lbl_scelta = lbl
+                if utente.saldo >= prezzo:
+                    lbl_scelta.configure(text="Erogazione in corso...\n")
+                    utente.saldo = utente.saldo - prezzo
+                    round(utente.saldo, 2)
+                    sleep(2)
+                    lbl_scelta.configure(text=f"Erogazione terminata.\n\nIl tuo saldo aggiornato è di € {utente.saldo}")
+                else:
+                    lbl_scelta.configure(text="Il tuo saldo non è sufficiente, effettua una ricarica")
+
+    def the(self, id_attivo, lbl):
+        prezzo = 1.20
+        for utente in self.conti:
+            if utente.id == id_attivo:
+                lbl_scelta = lbl
+                if utente.saldo >= prezzo:
+                    lbl_scelta.configure(text="Erogazione in corso...\n")
+                    utente.saldo = utente.saldo - prezzo
+                    round(utente.saldo, 2)
+                    sleep(2)
+                    lbl_scelta.configure(
+                        text=f"Erogazione terminata.\n\nIl tuo saldo aggiornato è di € {utente.saldo}")
+                else:
+                    lbl_scelta.configure(text="Il tuo saldo non è sufficiente, effettua una ricarica")
+
+    def acqua(self, id_attivo, lbl):
+        prezzo = 1.00
+        for utente in self.conti:
+            if utente.id == id_attivo:
+                lbl_scelta = lbl
+                if utente.saldo >= prezzo:
+                    lbl_scelta.configure(text="Erogazione in corso...\n")
+                    utente.saldo = utente.saldo - prezzo
+                    round(utente.saldo, 2)
+                    sleep(2)
+                    lbl_scelta.configure(
+                        text=f"Erogazione terminata.\n\nIl tuo saldo aggiornato è di € {utente.saldo}")
+                else:
+                    lbl_scelta.configure(text="Il tuo saldo non è sufficiente, effettua una ricarica")
+
+    def cioccolata(self, id_attivo, lbl):
+        prezzo = 1.50
+        for utente in self.conti:
+            if utente.id == id_attivo:
+                lbl_scelta = lbl
+                if utente.saldo >= prezzo:
+                    lbl_scelta.configure(text="Erogazione in corso...\n")
+                    utente.saldo = utente.saldo - prezzo
+                    round(utente.saldo, 2)
+                    sleep(2)
+                    lbl_scelta.configure(
+                        text=f"Erogazione terminata.\n\nIl tuo saldo aggiornato è di € {utente.saldo}")
+                else:
+                    lbl_scelta.configure(text="Il tuo saldo non è sufficiente, effettua una ricarica")
+
+
+def accesso():
+    accesso = False
+    user = int(idcode.get())
+    pw = int(idpass.get())
+    for utente in distr1.conti:
+        if user == utente.id and pw == utente.password:
+            accesso = True
+            messagebox.showinfo("Alert", "Login effettuato correttamente...")
+            # apro la pagina del menù
+            command = distr1.menu(user)
+    if accesso == False:
+        messagebox.showinfo("Alert", "Accesso negato, credenziali invalide.")
+        # torno nella vecchia pagina
+
+
+id1 = Conto(2.00, 1, 111)
+id2 = Conto(7.50, 2, 222)
+lista_conti = []
+lista_conti.append(id1)
+lista_conti.append(id2)
+distr1 = Distributore(lista_conti)
+
+pag_inizio = tk.Tk()
+pag_inizio.geometry('520x500')
+
+lbl = Label(pag_inizio, text="Benvenuto!\n", width=40, height=4, font=("arial", 16, "bold"))
+lbl.grid(column=0, row=0, columnspan=2)
+
+btnnuovo = tk.Button(pag_inizio, text="\nClicca qui\n per richiedere un nuovo ID\n", fg="black",
+                     command=distr1.nuovo_id, width=30, height=3, font=("arial", 12, "bold"))
+btnnuovo.grid(column=0, row=1, columnspan=2)
+
+pag_inizio.rowconfigure(2, weight=1)  #rigavuota
+
+lbl = Label(pag_inizio, text="Oppure inserisci credenziali per accedere\n",
+            width=40, height=2, font=("arial", 11, "bold"))
+lbl.grid(column=0, row=3, columnspan=2)
+
+userlbl = tk.Label(pag_inizio, text="Inserisci ID", font=("arial", 10, "bold"), width=15, height=4)
+userlbl.grid(column=0, row=4)
+idcode = tk.Entry(pag_inizio, width=30)
+idcode.grid(column=1, row=4)
+passlbl = tk.Label(pag_inizio, text="Inserisci password", font=("arial", 10, "bold"), width=15, height=4)
+passlbl.grid(column=0, row=5)
+idpass = tk.Entry(pag_inizio, width=30)
+idpass.grid(column=1, row=5)
+
+btnaccedi = tk.Button(pag_inizio, text="ACCEDI", fg="black",
+                      command=lambda: [accesso(),pag_inizio.destroy()],
+                      width=30, height=3, font=("arial", 12, "bold"))
+btnaccedi.grid(column=0, row=6, columnspan=2)
+
+pag_inizio.rowconfigure(7, weight=1)  #rigavuota
+
+pag_inizio.mainloop()
