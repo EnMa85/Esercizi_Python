@@ -1,0 +1,147 @@
+'''
+Creare una interfaccia grafica per il programma precedente.
+Il programma prevede una finestra dove l’utente inserisce la mail.
+una volta inserita la mail si apre una nuova finestra dove l’utente può scegliere il menu.
+Scelto il menu questo viene registrato nella tabella mysql.
+'''
+
+import tkinter as tk
+import mysql.connector
+
+mydb = mysql.connector.connect(
+  host="localhost",
+  user="root",
+  password="",
+  database="es_menu"
+)
+
+
+class Menu:
+    def __init__(self, nome, primo, secondo, contorno, frutta, prezzo):
+        self.nome = nome
+        self.primo = primo
+        self.secondo = secondo
+        self.contorno = contorno
+        self.frutta = frutta
+        self.prezzo = prezzo
+
+    def __str__(self):
+        return f"Menù {self.nome} - € {self.prezzo}\n{self.primo} - {self.secondo} - {self.contorno} - {self.frutta}\n"
+
+
+def invia():
+    mail = email.get()
+
+    # calcolo la lunghezza della lista ordini pregressi del cliente,
+    # per trovare l'indice da cui far partire il conteggio dei soli ordini di questa istanza
+    sql = f"SELECT * FROM tabmenu WHERE mail ='{mail}'"
+    mycursor = mydb.cursor()
+    mycursor.execute(sql)
+    indice_ordini = len(mycursor.fetchall())
+
+    #apro una nuova pagina
+    pag_menu = tk.Tk()
+    pag_menu.geometry('520x300')
+
+    # lista delle opzioni
+    lbl_menu = tk.Label(pag_menu, text="Seleziona un menù.", width=40, height=4, font=("arial", 16, "bold"))
+    lbl_menu.grid(column=0, row=0, columnspan=3)
+
+    carne = tk.Button(pag_menu, text="Menù carne\n€ 30", fg="black", command=lambda: ordina(mail, 1),
+                        width=16, height=4, font=("arial", 12, "bold"))
+    carne.grid(column=0, row=1)
+
+    pesce = tk.Button(pag_menu, text="Menù pesce\n€ 40", fg="black", command=lambda: ordina(mail, 2),
+                           width=16, height=4, font=("arial", 12, "bold"))
+    pesce.grid(column=1, row=1)
+
+    bambini = tk.Button(pag_menu, text="Menù bambini\n€ 20", fg="black", command=lambda: ordina(mail, 3),
+                         width=16, height=4, font=("arial", 12, "bold"))
+    bambini.grid(column=2, row=1)
+
+    pag_menu.rowconfigure(2, weight=1)  #riga vuota
+
+    concludi = tk.Button(pag_menu, text="Concludi ordine", fg="black", command=lambda: pag_menu.destroy(),
+                            width=20, height=4, font=("arial", 12, "bold"))
+    concludi.grid(column=0, row=3, columnspan=3)
+
+
+    def ordina(cliente, scelta):
+        totale_cliente = 0
+        cont = 1
+        for el in menu:
+            if cont == int(scelta):
+                #aggiorno il database
+                mycursor = mydb.cursor()
+                sql = "INSERT INTO tabmenu (mail, menu, prezzo) VALUES (%s, %s, %s)"
+                val = (mail, el.nome, el.prezzo)
+                mycursor.execute(sql, val)
+
+                #calcolo il totale del cliente solo per l'ordine in corso (escludendo i pregressi)
+                sql = f"SELECT * FROM tabmenu WHERE mail ='{mail}'"
+                mycursor.execute(sql)
+                ordini_cliente = mycursor.fetchall()
+                indice_istanza = 1
+                for ordine in ordini_cliente:
+                    if indice_istanza > indice_ordini:
+                        totale_cliente += int(ordine[2])
+                        indice_istanza += 1
+
+
+                #aggiorno la stampa nell'interfaccia
+                lbl_menu.configure(text=f"Ordine aggiornato. Il totale del tuo ordine è € {totale_cliente}."
+                                        f"\nSeleziona un altro menù o concludi.")
+
+            cont += 1 #incremento il conteggio per la ricerca del menù
+
+
+#inizializzazione menù
+carne = Menu("Carne", "primo1", "secondo1", "contorno1", "frutta1", 30)
+pesce = Menu("Pesce", "primo2", "secondo2", "contorno2", "frutta2", 40)
+bambini = Menu("Bambini", "primo3", "secondo3", "contorno3", "frutta3", 20)
+menu = []
+menu.append(carne)
+menu.append(pesce)
+menu.append(bambini)
+
+
+#Interfaccia pagina iniziale
+pag_inizio = tk.Tk()
+pag_inizio.geometry('450x200')
+
+lbl_benvenuto = tk.Label(pag_inizio, text="Benvenuto nel nostro ristorante!\n\nInserisci la tua mail:",
+                         width=35, height=4, font=("arial", 16, "bold"))
+lbl_benvenuto.grid(column=0, row=0, columnspan=2)
+
+email = tk.Entry(pag_inizio, width=35)
+email.grid(column=0, row=1, columnspan=2)
+
+pag_inizio.rowconfigure(3, weight=1) #riga vuota
+
+btn_accedi = tk.Button(pag_inizio, text="ACCEDI", fg="black", command=invia,
+                      width=18, height=2, font=("arial", 12, "bold"))
+btn_accedi.grid(column=0, row=4)
+
+btn_esci = tk.Button(pag_inizio, text="ESCI", fg="black", command=lambda: pag_inizio.destroy(),
+                      width=18, height=2, font=("arial", 12, "bold"))
+btn_esci.grid(column=1, row=4)
+
+pag_inizio.mainloop()
+
+
+mycursor = mydb.cursor()
+#stampo la tabella
+print("\nStampo tutta la tabella:")
+mycursor.execute("SELECT * FROM tabmenu")
+myresult = mycursor.fetchall()
+for x in myresult:
+  print(x)
+
+#stampo gli incassi
+mycursor.execute("SELECT * FROM tabmenu")
+myresult = mycursor.fetchall()
+sum = 0
+for x in myresult:
+    sum += int(x[2])
+    print(x)
+print("\nIl totale incassi è:", sum)
