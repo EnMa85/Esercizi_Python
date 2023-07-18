@@ -1,0 +1,64 @@
+'''
+scrivere un programma che chiede all'utente di inserire username e password e li va a registrare
+in una tabella creata ad hoc. Il programma se l'utente è già presente nella tabella stampa bentornato
+lo username altrimenti stampa registrazione avvenuta con successo. Attenzione:
+se l'utente è già presente nella tabella non deve essere registrato due volte.
+'''
+
+import mysql.connector
+
+mydb = mysql.connector.connect(
+  host="localhost",
+  user="root",
+  password="",
+  database="esercizio3"
+)
+''' Creazione tabella dentro database esercizio3
+mycursor = mydb.cursor()
+mycursor.execute("CREATE TABLE tabella3 (username VARCHAR(255), password VARCHAR(255))")
+'''
+''' Inserimento dei primi campi
+mycursor = mydb.cursor()
+sql = "INSERT INTO tabella3 (username, password) VALUES (%s, %s)"
+val = ("Tizio", "pass1")
+mycursor.execute(sql, val)
+sql = "INSERT INTO tabella3 (username, password) VALUES (%s, %s)"
+val = ("Caio", "pass2")
+mycursor.execute(sql, val)
+sql = "INSERT INTO tabella3 (username, password) VALUES (%s, %s)"
+val = ("Sempronio", "pass3")
+mycursor.execute(sql, val)
+mydb.commit()
+'''
+
+mycursor = mydb.cursor()
+
+scelta = input("Inserisci 1 per inserire i dati, 0 per terminare: ")
+
+cont = 0
+
+while scelta != "0":
+    nuovouser = input("Inserisci username: ")
+    # cerco se il nome è presente
+    sql = f"SELECT * FROM tabella3 WHERE username = '{nuovouser}'"
+    mycursor.execute(sql)
+    myresult = mycursor.fetchall()
+    for x in myresult:
+        cont = 1
+    if cont == 0:
+        nuovapass = input("Inserisci password: ")
+        sql = "INSERT INTO tabella3 (username, password) VALUES (%s, %s)"
+        val = (nuovouser, nuovapass)
+        mycursor.execute(sql, val)
+        print("Registrazione avvenuta con successo!")
+    else:
+        print("Bentornato!")
+    scelta = input("Inserisci 1 per inserire i dati, 0 per terminare: ")
+
+mydb.commit()
+
+print("Stampo tutta la tabella:")
+mycursor.execute("SELECT * FROM tabella3")
+myresult = mycursor.fetchall()
+for x in myresult:
+  print(x)
