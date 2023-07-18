@@ -1,0 +1,83 @@
+'''
+Creiamo una classe menu ogni menu è rappresentato da un primo, un secondo, un contorno e la frutta.
+Inoltre ogni menu ha un prezzo a seconda che il menu sia di carne, pesce o da bambini.
+Il programma chiede all’utente quale menu desidera ordinare e dopo aver chiesto la mail dell’utente
+va a registrare su una tabella con database dedicato il tipo di menu, la mail del cliente e il prezzo del menu.
+Quando il programma termina, (l’utente preme 0) il programma stampa tutti gli ordini effettuati presenti
+sulla tabella, e il totale dell’incasso (somma dei prezzi presenti nella tabella)
+'''
+
+
+class Menu:
+    def __init__(self, nome, primo, secondo, contorno, frutta, prezzo):
+        self.nome = nome
+        self.primo = primo
+        self.secondo = secondo
+        self.contorno = contorno
+        self.frutta = frutta
+        self.prezzo = prezzo
+
+    def __str__(self):
+        return f"Menù {self.nome} - € {self.prezzo}\n{self.primo} - {self.secondo} - {self.contorno} - {self.frutta}\n"
+
+
+import mysql.connector
+
+mydb = mysql.connector.connect(
+  host="localhost",
+  user="root",
+  password="",
+  database="es_menu"
+)
+
+carne = Menu("Carne", "primo1", "secondo1", "contorno1", "frutta1", 30)
+pesce = Menu("Pesce", "primo2", "secondo2", "contorno2", "frutta2", 40)
+bambini = Menu("Bambini", "primo3", "secondo3", "contorno3", "frutta3", 20)
+menu = []
+menu.append(carne)
+menu.append(pesce)
+menu.append(bambini)
+
+
+mail = 0
+incassi = 0
+scelta = 0
+primo_log = False
+
+while scelta != "0":
+    if primo_log == False:  #se l'utente non si è ancora registrato con la mail
+        mail = input("\nBenvenuto!\nDigita la tua e-mail: ")
+        primo_log = True
+        print("\nEcco i nostri menù:\n")
+        index = 1
+        for m in menu:
+            print(f"{index}) {m}")
+            index += 1
+    else:  #se ha già inserito la mail e visualizzato il menù
+        scelta = input("Seleziona il menù scelto o 0 per terminare: ")
+        if int(scelta) > len(menu):
+            print("Menù non presente.")
+        else:
+            #inserisco un conteggio per identificare l'elemento nella lista
+            index = int(scelta) - 1
+            cont = 0
+            for el in menu:
+                if cont == index:
+                    # aggiorno il database
+                    mycursor = mydb.cursor()
+                    sql = "INSERT INTO tabmenu (mail, menu, prezzo) VALUES (%s, %s, %s)"
+                    val = (mail, el.nome, el.prezzo)
+                    mycursor.execute(sql, val)
+                    incassi += el.prezzo
+                    print("Ordine inserito.\n")
+                cont += 1
+
+mydb.commit()
+mycursor = mydb.cursor()
+print("\nLa lista dei menù ordinati è: ")
+mycursor.execute("SELECT * FROM tabmenu")
+myresult = mycursor.fetchall()
+for x in myresult:
+    print(x)
+
+print(f"\nIl totale incassi è: € {incassi}")
