@@ -35,30 +35,32 @@ mycursor = mydb.cursor()
 
 scelta = input("Inserisci 1 per inserire i dati, 0 per terminare: ")
 
-cont = 0
-
 while scelta != "0":
     nuovouser = input("Inserisci username: ")
-    # cerco se il nome è presente
+    # cerco se il nome è presente (inteso come user univoco)
     sql = f"SELECT * FROM tabella3 WHERE username = '{nuovouser}'"
     mycursor.execute(sql)
     myresult = mycursor.fetchall()
-    for x in myresult:
-        cont = 1
-    if cont == 0:
+    if len(myresult) > 0:
+        pw = input("Bentornato! Inserisci password: ")
+        if pw == myresult[0][1]:
+            print("Accesso effettuato.")
+        else:
+            print("Password errata.")
+    else:
         nuovapass = input("Inserisci password: ")
         sql = "INSERT INTO tabella3 (username, password) VALUES (%s, %s)"
         val = (nuovouser, nuovapass)
         mycursor.execute(sql, val)
         print("Registrazione avvenuta con successo!")
-    else:
-        print("Bentornato!")
+
     scelta = input("Inserisci 1 per inserire i dati, 0 per terminare: ")
 
 mydb.commit()
 
 print("Stampo tutta la tabella:")
 mycursor.execute("SELECT * FROM tabella3")
+
 myresult = mycursor.fetchall()
 for x in myresult:
   print(x)
