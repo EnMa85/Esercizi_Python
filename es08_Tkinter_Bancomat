@@ -168,8 +168,6 @@ pickle.dump(lista_utenti, f)
 f.close()
 '''
 
-print("Benvenuto nella tua home banking.\n")
-
 f = open("bancomat.pkl", "rb")
 unpickler = pickle.Unpickler(f)
 lista_utenti = unpickler.load()
