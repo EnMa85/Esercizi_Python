@@ -25,7 +25,7 @@ class Bancomat:
 
     def importo(self, id, operazione):
         pag_importo = tk.Tk()
-        pag_importo.geometry('270x200')
+        pag_importo.geometry('%dx%d+%d+%d' % (270, 200, 450, 200))
         importolbl = tk.Label(pag_importo, text="Inserisci importo", font=("arial", 12, "bold"), width=15, height=5)
         importolbl.grid(column=0, row=0)
         importo = tk.Entry(pag_importo, width=15)
@@ -50,7 +50,7 @@ class Bancomat:
                     utente.saldo -= euro
                     utente.prelievi -= euro
                     utente.movimenti.append(f"Prelievo: -{euro}\n")
-                    importolbl.configure(text=f"Il saldo aggiornato è di € {utente.saldo}.", width=25, height=5)
+                    importolbl.configure(text=f"Operazione terminata.\nIl saldo aggiornato è di € {utente.saldo}.", width=25, height=5)
                     importolbl.grid(column=0, row=0, columnspan=2)
                     importo.grid_remove()
                     btnconferma.grid(column=0, row=2, columnspan=2)
@@ -63,7 +63,7 @@ class Bancomat:
                     utente.saldo += euro
                     utente.versamenti += euro
                     utente.movimenti.append(f"Versamento: +{euro}\n")
-                    importolbl.configure(text=f"Il saldo aggiornato è di € {utente.saldo}.", width=25, height=5)
+                    importolbl.configure(text=f"Operazione terminata.\nIl saldo aggiornato è di € {utente.saldo}.", width=25, height=5)
                     importolbl.grid(column=0, row=0, columnspan=2)
                     importo.grid_remove()
                     btnconferma.grid(column=0, row=2, columnspan=2)
@@ -94,7 +94,8 @@ class Bancomat:
                             utente.saldo -= euro
                             utente.bonifici_uscita -= (euro+comm)
                             utente.movimenti.append(f"Bonifico in uscita: -{cifra}, comm -{comm}\n")
-                            importolbl.configure(text=f"Il saldo aggiornato è di € {utente.saldo}.", width=25, height=5)
+                            importolbl.configure(text=f"Operazione terminata\nIl saldo aggiornato è di € "
+                                                      f"{utente.saldo}.", width=25, height=5)
                             importolbl.grid(column=0, row=0, columnspan=2)
                             btnconferma.grid(column=0, row=2, columnspan=2)
                             btnconferma.configure(text="TORNA AL MENU", command=lambda: pag_importo.destroy())
@@ -102,10 +103,22 @@ class Bancomat:
                             messagebox.showinfo("Accesso negato", "Il saldo non è sufficiente.")
                             pag_importo.destroy()
 
-    def stampa_saldo(self, id):
+    def stampa_mov(self, id):
         for el in self.conti:
             if el.id == id:
-                messagebox.showinfo("Visualizza saldo", f"\nIl saldo aggiornato è di € {el.saldo}")
+                stringa = "\n"
+                pag_elenco = tk.Tk()
+                pag_elenco.geometry('%dx%d+%d+%d' % (350, 450, 450, 200))
+                lbl = tk.Label(pag_elenco, text="I tuoi movimenti:\n", width=40, font=("arial", 12))
+                lbl.grid(column=0, row=0)
+                lbl_elenco = tk.Label(pag_elenco, text=stringa.join(el.movimenti), width=40, font=("arial", 10))
+                lbl_elenco.grid(column=0, row=1)
+                pag_elenco.rowconfigure(2, weight=1)
+                btnchiudi = tk.Button(pag_elenco, text="CHIUDI FINESTRA", fg="black",
+                                       command=lambda: pag_elenco.destroy(),
+                                       width=20, font=("arial", 12, "bold"))
+                btnchiudi.grid(column=0, row=3)
+
 
     def stampa_grafico(self, id):
         for el in self.conti:
@@ -123,12 +136,11 @@ class Bancomat:
                 # grafico 1
                 axes[1].bar(cat2, val2)
                 axes[1].set_title("Entrate vs Uscite")
-
                 plt.show()
 
 def menu(utente):
     pag_menu = tk.Tk()
-    pag_menu.geometry('520x420')
+    pag_menu.geometry('%dx%d+%d+%d' % (520, 420, 450, 200))
 
    # lista delle opzioni
     lbl_menu = tk.Label(pag_menu, text="Seleziona un'operazione.\n",
@@ -149,12 +161,12 @@ def menu(utente):
                             command=lambda: bancomat.importo(utente, 3),
                             width=20, height=4, font=("arial", 12, "bold"))
     btnbonifico.grid(column=0, row=2)
-    btnsaldo = tk.Button(pag_menu, text="SALDO", fg="black",
-                         command=lambda: bancomat.stampa_saldo(utente),
+    btnsaldo = tk.Button(pag_menu, text="ELENCO MOVIMENTI", fg="black",
+                         command=lambda: bancomat.stampa_mov(utente),
                          width=20, height=4, font=("arial", 12, "bold"))
     btnsaldo.grid(column=1, row=2)
 
-    btnelenco = tk.Button(pag_menu, text="ELENCO", fg="black",
+    btnelenco = tk.Button(pag_menu, text="STAMPA GRAFICO", fg="black",
                           command=lambda: bancomat.stampa_grafico(utente),
                           width=20, height=4, font=("arial", 12, "bold"))
     btnelenco.grid(column=0, row=3)
@@ -178,6 +190,8 @@ def accedi():
             pag_inizio.destroy()
     if not accesso:
         messagebox.showinfo("Accesso negato", "Utente non trovato. Riprova.")
+
+
 
 '''  Da eseguire solo al primo avvio per memorizzare nel file i conti inizializzati
 utente1 = Contocorrente("User 1", "01", int(10000))
@@ -203,9 +217,10 @@ import tkinter as tk
 from tkinter import messagebox
 
 pag_inizio = tk.Tk()
-lbl_benvenuto = tk.Label(pag_inizio, text="Benvenuto!\nDigita le tue credenziali per accedere.\n",
-                         width=40, height=4, font=("arial", 16, "bold"))
-lbl_benvenuto.grid(column=0, row=0, columnspan=2)
+pag_inizio.geometry('%dx%d+%d+%d' % (500, 400, 450, 200))
+lbl_benvenuto = tk.Label(pag_inizio, text="\nBenvenuto!\nDigita le tue credenziali per accedere.\n",
+                         width=40, height=5, font=("arial", 16, "bold"))
+lbl_benvenuto.grid(column=0, row=0, columnspan=3)
 
 lbl_username = tk.Label(pag_inizio, text="Inserisci username", width=18, height=3, font=("arial", 11, "bold"))
 lbl_username.grid(column=0, row=2)
@@ -218,7 +233,7 @@ id.grid(column=1, row=3)
 pag_inizio.rowconfigure(4, weight=1)  # rigavuota
 btnaccedi = tk.Button(pag_inizio, text="ACCEDI", fg="black", command=lambda: accedi(),
                       width=30, height=3, font=("arial", 12, "bold"))
-btnaccedi.grid(column=0, row=5, columnspan=2)
+btnaccedi.grid(column=0, row=5, columnspan=3)
 pag_inizio.rowconfigure(6, weight=1)  # rigavuota
 
 pag_inizio.mainloop()
