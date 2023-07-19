@@ -5,6 +5,7 @@ import tkinter as tk
 import random
 from time import sleep
 
+
 class Conto:
     def __init__(self, saldo, id, password):
         self.saldo = saldo
@@ -13,6 +14,7 @@ class Conto:
 
     def __str__(self):
         return (f"\nIl saldo del conto è: {self.saldo}")
+
 
 class Distributore:
     def __init__(self, conti):
@@ -23,7 +25,7 @@ class Distributore:
 
     def nuovo_id(self):
         pag_nvid = tk.Tk()
-        pag_nvid.geometry('400x300')
+        pag_nvid.geometry('%dx%d+%d+%d' % (400, 300, 450, 200))
         nuovoid = random.randint(10, 99)
         nuovapass = random.randint(100, 999)
         nuovo_utente = Conto(0, nuovoid, nuovapass)
@@ -39,6 +41,7 @@ class Distributore:
 
     def versamento(self, id_attivo):
         pag_vers = Tk()
+        pag_vers.geometry('%dx%d+%d+%d' % (320, 200, 450, 200))
         verslbl = tk.Label(pag_vers, text="Inserisci importo", font=("arial", 10, "bold"), width=40, height=4)
         verslbl.grid(column=0, row=0)
 
@@ -60,7 +63,7 @@ class Distributore:
 
     def menu(self, utente_attivo):
         pag_menu = tk.Tk()
-        pag_menu.geometry('520x500')
+        pag_menu.geometry('%dx%d+%d+%d' % (520, 500, 450, 200))
         for utente in self.conti:
             if utente.id == utente_attivo:
                 saldo_attivo = round(utente.saldo, 2)
@@ -185,7 +188,7 @@ lista_conti.append(id2)
 distr1 = Distributore(lista_conti)
 
 pag_inizio = tk.Tk()
-pag_inizio.geometry('520x500')
+pag_inizio.geometry('%dx%d+%d+%d' % (520, 500, 450, 200))
 
 lbl = Label(pag_inizio, text="Benvenuto!\n", width=40, height=4, font=("arial", 16, "bold"))
 lbl.grid(column=0, row=0, columnspan=2)
