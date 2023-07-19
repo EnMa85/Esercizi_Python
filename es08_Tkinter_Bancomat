@@ -19,7 +19,7 @@ class Bancomat:
 
     def importo(self, id, operazione):
         pag_importo = tk.Tk()
-        pag_importo.geometry('270x200')
+        pag_importo.geometry('%dx%d+%d+%d' % (270, 200, 450, 200))
         importolbl = tk.Label(pag_importo, text="Inserisci importo", font=("arial", 12, "bold"), width=15, height=5)
         importolbl.grid(column=0, row=0)
         importo = tk.Entry(pag_importo, width=15)
@@ -104,7 +104,7 @@ class Bancomat:
 
 def menu(utente):
     pag_menu = tk.Tk()
-    pag_menu.geometry('520x420')
+    pag_menu.geometry('%dx%d+%d+%d' % (520, 420, 450, 200))
 
    # lista delle opzioni
     lbl_menu = tk.Label(pag_menu, text="Seleziona un'operazione.\n",
@@ -179,7 +179,7 @@ import tkinter as tk
 from tkinter import messagebox
 
 pag_inizio = tk.Tk()
-# pag_inizio.geometry('520x320')
+pag_inizio.geometry('%dx%d+%d+%d' % (500, 400, 450, 200))
 lbl_benvenuto = tk.Label(pag_inizio, text="Benvenuto!\nDigita le tue credenziali per accedere.\n",
                          width=40, height=4, font=("arial", 16, "bold"))
 lbl_benvenuto.grid(column=0, row=0, columnspan=2)
@@ -203,3 +203,4 @@ pag_inizio.mainloop()
 f = open("bancomat.pkl", "wb")
 pickle.dump(lista_utenti, f)
 f.close()
+
