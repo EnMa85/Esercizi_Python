@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pagina gestore</title>
+    <style>
+        body {
+            background-image: url('https://png.pngtree.com/thumb_back/fw800/background/20210908/pngtree-computer-desktop-business-office-coffee-keyboard-photography-map-with-map-image_822604.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: top;
+            text-align: center;
+            font-family: Lucida Console;
+            }
+            .menu {
+            font-size: 20px;
+            display: inline-block;
+            border-radius: 10px 10px;
+            padding: 3px 7px 3px 7px;
+            border: 2px solid black;
+            text-align: center;
+            background-color: #FFFFFF;
+            }
+        h2, h3 {
+            font-family: Lucida Console;
+            text-align: center;
+            }
+        .linea {
+            display: inline-block;
+            }
+        .lista {
+            width: 50%
+            font-size: 25px;
+            display: inline-block;
+            border-radius: 5px 5px;
+            padding: 5px 7px 5px 7px;
+            border: 2px solid black;
+            text-align: center;
+            width: 100px;
+            }
+    </style>
+</head>
+<body>
+    <h2 class="titolo">Benvenuto nella tua pagina gestore</h2>
+    <div>
+        <span class="menu"><a href='gestore_ordini' style="color:#000000">Lista Ordini</a></span>
+        <span class="menu"><a href='gestore_incassi' style="color:#000000">Elenco Incassi</a></span>
+        <span class="menu"><a href='gestore_statistiche' style="color:#000000">Visualizza Statistiche</a></span>
+        <span class="menu"><a href='/' style="color:#000000">Logout</a></span>
+    </div>
+    <br><br><br><br>
+    <h2>Seleziona il tipo di grafico</h2>
+    <br><br>
+    <h3>STATISTICHE PER CLIENTE</h3>
+    <div class="linea">
+        <span><a class=lista href='tortaCli' style="color:#000000">TORTA</a></span>
+        <span><a class=lista href='istoCli' style="color:#000000">ISTOGRAMMA</a></span>
+    </div>
+    <br><br><br><br>
+    <h3>STATISTICHE PER PIATTO</h3>
+    <div class="linea">
+        <span><a class=lista href='tortaPia' style="color:#000000">TORTA</a></span>
+        <span><a class=lista href='istoPia' style="color:#000000">ISTOGRAMMA</a></span>
+    </div>
+  </body>
+</html>

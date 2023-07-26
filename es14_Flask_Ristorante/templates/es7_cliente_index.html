@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Benvenuti</title>
+    <style>
+        body {
+            font-family: Papyrus;
+            text-align: center;
+            font-size: 16px;
+            background-image: url('https://img.freepik.com/premium-photo/empty-wood-table-top-blurred-coffee-shop-restaurant-interior-background-can-used-display-montage-your-products_7191-1679.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            }
+        .benv {
+            font-family: Papyrus;
+            font-size: 45px;
+            font-weight: bold;
+            }
+        .block {
+            width: 440px;
+            margin: auto;
+            border-radius: 7px 10px;
+            background-image: url('https://www.loretosanfrancescohotel.it/images/menu-ristorante.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            padding-right: 9px;
+            }
+        .labsel {
+           display: inline-block;
+           font-size: 16px;
+           color: white;
+           text-align: left;
+           width: 160px;
+           margin-right: 18px;
+           }
+        .sel {
+           background-color: #FFFFF0;
+           border: 2px solid #045378;
+           border-radius: 7px 10px;
+           height: 33px;
+           width: 200px;
+           font-size: 14px;
+           text-align: justify;
+           font-family: Papyrus;
+           }
+        .ordina {
+           background-color: #FFFFF0;
+           border: 2px solid #045378;
+           border-radius: 7px 10px;
+           text-align: center;
+           height: 30px;
+           width: 190px;
+           font-size: 14px;
+           font-weight: bold;
+           font-family: Papyrus;
+           padding-top: 3px;
+           }
+        .mail {
+           border-radius: 7px 10px;
+           background-color: #FFFFF0;
+           height: 18px;
+           width: 150px;
+           padding: 3px 10px;
+           }
+    </style>
+  </head>
+<body>
+    <h1 class="benv">Benvenuto&ensp;{{ nome }}!!!&ensp;Ecco il menù:</h1>
+    <div class="block">
+        <form method="POST" action="/ordina">
+            <br><br><br><br><br><br><br>
+            <div class="labsel">
+                <label for="primi">Seleziona un primo</label>
+            </div>
+            <div class="labsel">
+                <select name="primi" id="primi" class="sel">
+                    <option selected value=""></option>
+                    {% for p in lista_primi %}
+                    <option value="{{p.piatto}}">{{ p }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br><br>
+            <div class="labsel">
+                <label for="secondi">Seleziona un secondo</label>
+            </div>
+            <div class="labsel">
+                <select name="secondi" id="secondi" class="sel">
+                    <option selected value=""></option>
+                    {% for p in lista_secondi %}
+                    <option value="{{p.piatto}}">{{ p }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br><br>
+            <div class="labsel">
+                <label for="contorni">Seleziona un contorno</label>
+            </div>
+            <div class="labsel">
+                <select name="contorni" id="contorni" class="sel">
+                    <option selected value=""></option>
+                    {% for p in lista_contorni %}
+                    <option value="{{p.piatto}}">{{ p }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br><br>
+            <div class="labsel">
+                <label for="dolci">Seleziona un dolce</label>
+            </div>
+            <div class="labsel">
+                <select name="dolci" id="dolci" class="sel">
+                    <option selected value=""></option>
+                    {% for p in lista_dolci %}
+                    <option value={{p.piatto}}>{{ p }}</option>
+                    {% endfor %}
+                </select>
+                <input type="hidden" name="mail" id="mail" value={{mail}} required>
+            </div>
+            <br><br><br>
+            <input type="submit" name="ordina" value="O&nbsp;r&nbsp;d&nbsp;i&nbsp;n&nbsp;a" class="ordina">
+            <input type="submit" name="annulla" value="A&nbsp;n&nbsp;n&nbsp;u&nbsp;l&nbsp;l&nbsp;a" class="ordina">
+            <br><br>
+        </form>
+    </div>
+</body>
+</html>
