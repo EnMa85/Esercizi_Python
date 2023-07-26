@@ -14,7 +14,7 @@ from datetime import datetime
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  password="pyThon23@_",
+  password="",
   database="ristorante"
 )
 
