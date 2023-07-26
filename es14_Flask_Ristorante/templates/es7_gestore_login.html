@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pagina gestore</title>
+    <style>
+           body {
+            background-image: url('https://thumbs.dreamstime.com/z/parola-amministratore-scritta-su-un-cubo-di-legno-con-sfondo-blu-195109477.jpg?w=2048');
+            background-size: cover;
+            background-repeat: no-repeat;
+            text-align: center;
+            text-align: center;
+            font-family: Lucida Console;
+            font-size: 19px;
+            }
+        .bottoni {
+           background-color: white;
+           border: 2px solid #045378;
+           border-radius: 10px 10px;
+           font-size: 16px;
+           text-align: justify;
+           padding: 3px 7px 3px 7px;
+           width: 85px;
+           text-align: center;
+           }
+    </style>
+</head>
+<body>
+    <div>
+        <br>
+        <h1>Accedi come gestore</h1>
+        <br>
+        <form method="POST" action="login_gestore">
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="username" required>
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" required>
+            <input class="bottoni" type="submit" value="Login">
+        </form>
+    </div>
+</body>
+</html>
