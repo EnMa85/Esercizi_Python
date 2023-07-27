@@ -132,21 +132,26 @@ def index():
                 save_cookies_db(mail, access)
                 return render_template('es7_cliente_index.html', mail=mail, nome=nome, lista_primi=lista_primi, lista_secondi=lista_secondi, lista_contorni=lista_contorni, lista_dolci=lista_dolci)
         if not reg:
-            return render_template('es7_cliente_login.html')
+            errore = "CREDENZIALI INVALIDE!!!"
+            return render_template('es7_cliente_login.html', errore=errore)
 
+    gia_reg = False
     if btn2:  #se clicca su registrati
         # prendo la lista credenziali salvata
-        mycursor.execute("SELECT * FROM utenti")
+        mycursor.execute("SELECT email FROM utenti")
         dbLista_mail = mycursor.fetchall()
-        if mail not in dbLista_mail[0]:
+        for m in dbLista_mail:
+            if mail == m[0]:
+                gia_reg == True
+                errore = 'Utente già registrato! Clicca su ACCEDI'
+                return render_template('es7_cliente_login.html', errore=errore)
+        if not gia_reg:
             sql = "INSERT INTO utenti (email, password) VALUES (%s,%s)"
             val = (mail, pw)
             mycursor.execute(sql, val)
             mydb.commit()
             save_cookies_db(mail, access)
             return render_template('es7_cliente_index.html', mail=mail, nome=nome, lista_primi=lista_primi, lista_secondi=lista_secondi, lista_contorni=lista_contorni, lista_dolci=lista_dolci)
-        else:
-            return render_template('es7_cliente_login.html')
 
 
 @app.route('/ordina', methods=['POST'])
