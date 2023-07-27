@@ -43,7 +43,9 @@
     <br>
     <h1 class="benv">Benvenuto&ensp;nel&ensp;nostro&ensp;ristorante</h1>
     <h1>Accedi o registrati</h1>
-    <br>
+    {% if errore %}
+        <h5> {{ errore }} </h5>
+    {% endif %}
     <form class="lbl" method="POST" action="/login">
         <label class="lbl" for="email">EMAIL:</label>
         <input class="lbl" type="text" name="email" id="email" required>
