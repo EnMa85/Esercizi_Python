@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Benvenuti</title>
+    <style>
+        body {
+            background-image: url('https://www.shutterstock.com/image-vector/grocery-store-shop-interior-color-600w-1556043872.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            font-family: Georgia;
+            text-align: center;
+            font-size: 16px;
+            }
+        .benv {
+            font-family: Georgia;
+            font-size: 45px;
+            font-weight: bold;
+            }
+        .block {
+            width: 700px;
+            margin: auto;
+            border-radius: 7px 10px;
+            padding-right: 9px;
+            }
+        .labsel {
+           display: inline-block;
+           font-size: 18px;
+           text-align: left;
+           font-weight: bold;
+           width: 230px;
+           }
+        .sel {
+           background-color: #FFFFF0;
+           border: 2px solid #045378;
+           border-radius: 7px 10px;
+           height: 33px;
+           width: 250px;
+           font-size: 14px;
+           text-align: justify;
+           font-family: Georgia;
+           }
+        .acquista {
+           background-color: #FFFFF0;
+           border: 2px solid #045378;
+           border-radius: 7px 10px;
+           text-align: center;
+           height: 30px;
+           width: 200px;
+           font-size: 14px;
+           font-weight: bold;
+           font-family: Georgia;
+           padding-top: 3px;
+           }
+    </style>
+  </head>
+<body>
+    <h1 class="benv">Benvenuto&ensp;{{ nome }}!!!</h1>
+    <br>
+    <h2>Seleziona i tuoi prodotti.</h2>
+    <div class="block">
+        <form method="POST" action="/acquista">
+            <br><br><br>
+            <div class="labsel">
+                <label for="banco">Prodotti da banco</label>
+            </div>
+            <div class="labsel">
+                <select name="banco" id="banco" class="sel">
+                    <option selected value=""></option>
+                    {% for p in lista_banco %}
+                    <option value="{{p.prodotto}}">{{ p }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br><br>
+            <div class="labsel">
+                <label for="freschi">Prodotti freschi</label>
+            </div>
+            <div class="labsel">
+                <select name="freschi" id="freschi" class="sel">
+                    <option selected value=""></option>
+                    {% for p in lista_freschi %}
+                    <option value="{{p.prodotto}}">{{ p }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br><br>
+            <div class="labsel">
+                <label for="frigo">Prodotti da frigo</label>
+            </div>
+            <div class="labsel">
+                <select name="frigo" id="frigo" class="sel">
+                    <option selected value=""></option>
+                    {% for p in lista_frigo %}
+                    <option value="{{p.prodotto}}">{{ p }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br><br>
+            <div class="labsel">
+                <label for="elettrodomestici">Elettrodomestici</label>
+            </div>
+            <div class="labsel">
+                <select name="elettrodomestici" id="elettrodomestici" class="sel">
+                    <option selected value=""></option>
+                    {% for p in lista_elettrodomestici %}
+                    <option value="{{p.prodotto}}">{{ p }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <input type="hidden" name="mail" id="mail" value={{mail}} required>
+            <br><br><br>
+            <input type="submit" name="acquista" value="Acquista" class="acquista">
+            <input type="submit" name="annulla" value="Annulla" class="acquista">
+            <br><br>
+        </form>
+    </div>
+</body>
+</html>

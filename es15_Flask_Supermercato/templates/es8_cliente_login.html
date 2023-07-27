@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Benvenuti</title>
+    <style>
+        body {
+            font-family: Georgia;
+            text-align: center;
+            font-size: 15px;
+            background-image: url('https://media.gettyimages.com/id/1084845678/it/vettoriale/bio-supermercato-shopping-persone-disegno.webp?s=2048x2048&w=gi&k=20&c=04rmkXj58RijLaE-O9Y5BH_SoBRMkwepz4Jppkk0u0Q=');
+            background-size: cover;
+            background-repeat: no-repeat;
+            }
+        .ammin {
+            font-weight: bold;
+            font-size: 14px;
+            font-family: Georgia;
+            text-align: center;
+           }
+        .benv {
+            font-family: Georgia;
+            font-size: 40px;
+            top: 0px;
+            }
+        .submit {
+            background-color: #FFFFF0;
+            border: 2px solid black;
+            border-radius: 7px 7px;
+            text-align: center;
+            height: 20px;
+            width: 150px;
+            font-size: 12px;
+            font-weight: bold;
+            }
+        .lbl {
+            height: 15px;
+            font-weight: bold;
+            border-radius: 5px 5px;
+            }
+        div {
+            position: absolute;
+            top: 70px;
+            right: 200px;
+            }
+    </style>
+</head>
+<body>
+    <h1 class="benv">Benvenuto&ensp;nel&ensp;nostro&ensp;supermercato</h1>
+    <div  class="right">
+        <h3>Accedi o registrati</h3>
+        {% if errore %}
+            <h5> {{ errore }} </h5>
+        {% endif %}
+        <form class="lbl" method="POST" action="/login">
+            <label class="lbl" for="email">Email:</label>
+            <input class="lbl" type="text" name="email" id="email" required>
+            <label class="lbl" for="password">Password:</label>
+            <input class="lbl" type="password" name="password" id="password" required>
+            <br><br>
+            <input class="submit" type="submit" name="accedi" value="Accedi">
+            <input class="submit" type="submit" name="registrati" value="Registrati">
+        </form>
+        <br><br>
+        <h6 class="ammin"><a href="gestore" style="color:#000000">ENTRA COME GESTORE</a></h6>
+    </div>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Acquista</title>
+    <style>
+       body {
+           background-color: #DCDCDC;
+           text-align: center;
+           font-family: Georgia;
+           display: inline-block;
+           }
+       .carrello {
+           position: absolute;
+           height: 100%;
+           left: 0px;
+           top: 0px;
+           }
+       .scontrino {
+           background-color: #FFFFF0;
+           position: absolute;
+           left: 850px;
+           border: 2px solid #045378;
+           border-radius: 5px 5px;
+           width: 330px;
+           bottom: 100px;
+           text-align: center;
+           font-size: 14px;
+           }
+       .testo {
+           position: absolute;
+           left: 850px;
+           top: 5px;
+           }
+       .indietro {
+           font-size: 18px;
+           position: absolute;
+           left: 820px;
+           bottom: 5px;
+           }
+      .prodotti {
+           text-align: left;
+           padding-left: 70px;;
+           }
+</style>
+</head>
+<body>
+    <div class="testo">
+        <h2>Ecco il tuo scontrino!</h2>
+        <h3>Consegneremo a breve la tua spesa!</h3>
+    </div>
+    <img class="carrello" src="https://t1.pixers.pics/img-c676e9e9/poster-carrello-supermercato-con-le-borse-della-spesa-per-il-vostro-disegno.jpg?H4sIAAAAAAAAA42PW07EMAxFt9OR0tp5p13A_M4SqjTJDIU-oiRAxepJAfGHhPzha8v3WBdet2zvAVzYSkiwzt4vAe7zUqc8pJDnj9AgkRovQ90uDWJV-1tILu2xabUirRBEGkEUVZfh3VbjatNL81RKzANA5l2cj0qrzWVwawaGVAMakL3pvZRBOKPDGNtc7OZt8i0TB8cubg-CZ_0fa4AiyMnTSU3Go5jMyBgeEttfwheWc06kkif6J6NGJPrMVtK8NjXsXq9L8xwfF_jj57eG6oLrDQQC5SARhDlX4_UmkHKJwoyWCSkCC44jc71VSnGmQ22omHO-7-qXT0JabyKJAQAA">
+    <div class="scontrino">
+        <br><br>
+        <h2>Supermercato Python</h2>
+        <br><br>
+        <div class="prodotti">
+            {% for p in carrello %}
+                <h3>{{ p }}</h3>
+            {% endfor %}
+        </div>
+        <br><br>
+        <h3>Totale scontrino € {{ scontrino }}</h3>
+        <h3>Data {{ data }}</h3>
+        <br><br>
+        <h2>Grazie per averci scelto!</h2>
+    </div>
+    <br>
+    <h4 class="indietro"><a href="javascript:history.go(-1);" style="color:#000000">Hai dimenticato qualcosa? Torna indietro.</a></h4>
+</body>
+</html>

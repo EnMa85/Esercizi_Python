@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pagina gestore</title>
+    <style>
+        body {
+            background-image: url('https://media.istockphoto.com/id/1217436489/it/foto/concetto-di-home-office-tastiera-bianca-mouse-e-blocco-note-su-sfondo-giallo-chiaro-lay-piatto.jpg?s=1024x1024&w=is&k=20&c=VGZNalLuq6Gi_bFlAheHyW0a1nwo36lkVVLuHhEXmYk=');
+            background-size: cover;
+            background-repeat: round;
+            background-position: top;
+            text-align: center;
+            font-family: Georgia;
+            }
+        .titolo {
+            font-size: 35px;
+            }
+        .grafici {
+           background-color: #FFFFF0;
+           border: 2px solid #045378;
+           border-radius: 7px 10px;
+           text-align: center;
+           height: 30px;
+           width: 200px;
+           font-size: 14px;
+           font-weight: bold;
+           font-family: Georgia;
+           padding-top: 3px;
+           }
+        .ammin {
+            font-weight: bold;
+            font-size: 20px;
+            font-family: Georgia;
+            text-align: center;
+           }
+    </style>
+</head>
+<body>
+    <br>
+    <h1 class="titolo">Benvenuto nella tua pagina gestore.</h1>
+    <br>
+    <h2>Consulta qui le statistiche del tuo negozio.</h2>
+    <br><br>
+    <h2>Seleziona il tipo di grafico</h2>
+    <br><br>
+    <form method="POST" action="statistiche">
+        <h3>GRAFICI A TORTA</h3>
+            <input type="submit" name="tortaCli" value="Vendite per cliente" class="grafici">
+            <input type="submit" name="tortaProd" value="Vendite per prodotto" class="grafici">
+            <input type="submit" name="tortaCliAcc" value="Accessi per cliente" class="grafici">
+            <input type="submit" name="tortaAccData" value="Accessi per data" class="grafici">
+            <input type="submit" name="tortaAccDay" value="Accessi della giornata" class="grafici">
+            <br><br><br><br>
+        <h3>GRAFICI A ISTOGRAMMA</h3>
+            <input type="submit" name="istoCli" value="Vendite per cliente" class="grafici">
+            <input type="submit" name="istoProd" value="Vendite per prodotto" class="grafici">
+            <input type="submit" name="istoCliAcc" value="Accessi per cliente" class="grafici">
+            <input type="submit" name="istoAccData" value="Accessi per data" class="grafici">
+            <input type="submit" name="istoAccDay" value="Accessi della giornata" class="grafici">
+            <br><br><br><br><br>
+    </form>
+    <h3 class="ammin"><a href="/" style="color:#000000">EFFETTUA IL LOGOUT</a></h3>
+    <br>
+  </body>
+</html>
