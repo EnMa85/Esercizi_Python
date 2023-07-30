@@ -75,8 +75,8 @@
             <div class="labsel">
                 <select name="primi" id="primi" class="sel">
                     <option selected value=""></option>
-                    {% for p in lista_primi %}
-                    <option value="{{p.piatto}}">{{ p }}</option>
+                    {% for primo in lista_primi %}
+                    <option value="{{primo.piatto}}">{{ primo }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -87,8 +87,8 @@
             <div class="labsel">
                 <select name="secondi" id="secondi" class="sel">
                     <option selected value=""></option>
-                    {% for p in lista_secondi %}
-                    <option value="{{p.piatto}}">{{ p }}</option>
+                    {% for secondo in lista_secondi %}
+                    <option value="{{secondo.piatto}}">{{ secondo }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -99,8 +99,8 @@
             <div class="labsel">
                 <select name="contorni" id="contorni" class="sel">
                     <option selected value=""></option>
-                    {% for p in lista_contorni %}
-                    <option value="{{p.piatto}}">{{ p }}</option>
+                    {% for contorno in lista_contorni %}
+                    <option value="{{contorno.piatto}}">{{ contorno }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -111,12 +111,12 @@
             <div class="labsel">
                 <select name="dolci" id="dolci" class="sel">
                     <option selected value=""></option>
-                    {% for p in lista_dolci %}
-                    <option value={{p.piatto}}>{{ p }}</option>
+                    {% for dolce in lista_dolci %}
+                    <option value="{{dolce.piatto}}">{{ dolce }}</option>
                     {% endfor %}
                 </select>
-                <input type="hidden" name="mail" id="mail" value={{mail}} required>
             </div>
+            <input type="hidden" name="mail" id="mail" value={{mail}} required>
             <br><br><br>
             <input type="submit" name="ordina" value="O&nbsp;r&nbsp;d&nbsp;i&nbsp;n&nbsp;a" class="ordina">
             <input type="submit" name="annulla" value="A&nbsp;n&nbsp;n&nbsp;u&nbsp;l&nbsp;l&nbsp;a" class="ordina">
