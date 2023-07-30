@@ -14,34 +14,13 @@ from datetime import datetime
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  password="",
+  password="pyThon23@_",
   database="ristorante"
 )
 
 app = Flask(__name__)
 
-class Primi:
-    def __init__(self, piatto, prezzo):
-        self.piatto = piatto
-        self.prezzo = prezzo
-    def __str__(self):
-        return f"€ {self.prezzo} - {self.piatto}"
-
-class Secondi:
-    def __init__(self, piatto, prezzo):
-        self.piatto = piatto
-        self.prezzo = prezzo
-    def __str__(self):
-        return f"€ {self.prezzo} - {self.piatto}"
-
-class Contorni:
-    def __init__(self, piatto, prezzo):
-        self.piatto = piatto
-        self.prezzo = prezzo
-    def __str__(self):
-        return f"€ {self.prezzo} - {self.piatto}"
-
-class Dolci:
+class Piatti:
     def __init__(self, piatto, prezzo):
         self.piatto = piatto
         self.prezzo = prezzo
@@ -49,18 +28,18 @@ class Dolci:
         return f"€ {self.prezzo} - {self.piatto}"
 
 #dichiaro e inizializzo piatti e prezzi
-primo1 = Primi("Lasagne", 10)
-primo2 = Primi("Risotto ai funghi", 12)
-primo3 = Primi("Gnocchi alla sorrentina", 8)
-secondo1 = Secondi("Parmigiana di melanzane", 8)
-secondo2 = Secondi("Involtini di zucchine", 10)
-secondo3 = Secondi("Sformato di verdure", 9)
-contorno1 = Contorni("Insalata mista", 4)
-contorno2 = Contorni("Verdure grigliate", 6)
-contorno3 = Contorni("Patate alla brace", 7)
-dolce1 = Dolci("Tiramisù", 5)
-dolce2 = Dolci("Semifreddo all'arancia", 6)
-dolce3 = Dolci("Tartufo di pizzo", 7)
+primo1 = Piatti("Lasagne", 10)
+primo2 = Piatti("Risotto ai funghi", 12)
+primo3 = Piatti("Gnocchi alla sorrentina", 8)
+secondo1 = Piatti("Parmigiana di melanzane", 8)
+secondo2 = Piatti("Involtini di zucchine", 10)
+secondo3 = Piatti("Sformato di verdure", 9)
+contorno1 = Piatti("Insalata mista", 4)
+contorno2 = Piatti("Verdure grigliate", 6)
+contorno3 = Piatti("Patate alla brace", 7)
+dolce1 = Piatti("Tiramisù", 5)
+dolce2 = Piatti("Semifreddo all'arancia", 6)
+dolce3 = Piatti("Tartufo di pizzo", 7)
 lista_primi = []
 lista_secondi = []
 lista_contorni = []
@@ -171,22 +150,20 @@ def ordina():
 
         #associo i prezzi ai piatti scelti
         prezzo_menu = 0
-        for p in lista_primi:
-            if scelta_primo == p.piatto:
-                prezzo_menu += int(p.prezzo)
-        for p in lista_secondi:
-            if scelta_secondo == p.piatto:
-                prezzo_menu += int(p.prezzo)
-        for p in lista_contorni:
-            if scelta_contorno == p.piatto:
-                prezzo_menu += int(p.prezzo)
-        for p in lista_dolci:
-            if scelta_dolce == p.piatto:
-                prezzo_menu += int(p.prezzo)
-
+        for primo in lista_primi:
+            if scelta_primo == primo.piatto:
+                prezzo_menu += int(primo.prezzo)
+        for secondo in lista_secondi:
+            if scelta_secondo == secondo.piatto:
+                prezzo_menu += int(secondo.prezzo)
+        for contorno in lista_contorni:
+            if scelta_contorno == contorno.piatto:
+                prezzo_menu += int(contorno.prezzo)
+        for dolce in lista_dolci:
+            if scelta_dolce == dolce.piatto:
+                prezzo_menu += int(dolce.prezzo)
         #restituisco la stringa con menù e prezzo
         iltuomenu = [scelta_primo, scelta_secondo, scelta_contorno, scelta_dolce]
-
         #salvo l'ordine sul database
         sql = "INSERT INTO ordinicorso (mail, primo, secondo, contorno, dolce, prezzo) VALUES (%s,%s,%s,%s,%s,%s)"
         val = (mail, scelta_primo, scelta_secondo, scelta_contorno, scelta_dolce, prezzo_menu)
@@ -296,7 +273,6 @@ def pagina_statistiche():
 
 @app.route('/tortaCli')
 def tortaCli():
-    plt.clf()
     mycursor = mydb.cursor()
 
     totale_incassi = 0
@@ -329,7 +305,6 @@ def tortaCli():
 
 @app.route('/istoCli')
 def istoCli():
-    plt.clf()
     mycursor = mydb.cursor()
     totale_cliente = []
     lista_clienti = []
@@ -361,7 +336,6 @@ def istoCli():
 
 @app.route('/tortaPia')
 def tortaPia():
-    plt.clf()
     mycursor = mydb.cursor()
 
     totale_piatti = []
@@ -371,17 +345,17 @@ def tortaPia():
     mycursor.execute("SELECT primo, secondo, contorno, dolce FROM ordiniconclusi")
     piatti_venduti = mycursor.fetchall()
 
-    for piatto in lista_primi:
-        lista_piatti.append(piatto.piatto)
+    for primo in lista_primi:
+        lista_piatti.append(primo.piatto)
         totale_piatti.append(0)
-    for piatto in lista_secondi:
-        lista_piatti.append(piatto.piatto)
+    for secondo in lista_secondi:
+        lista_piatti.append(secondo.piatto)
         totale_piatti.append(0)
-    for piatto in lista_contorni:
-        lista_piatti.append(piatto.piatto)
+    for contorno in lista_contorni:
+        lista_piatti.append(contorno.piatto)
         totale_piatti.append(0)
-    for piatto in lista_dolci:
-        lista_piatti.append(piatto.piatto)
+    for dolce in lista_dolci:
+        lista_piatti.append(dolce.piatto)
         totale_piatti.append(0)
 
     cont = 0
@@ -400,7 +374,6 @@ def tortaPia():
 
 @app.route('/istoPia')
 def istoPia():
-    plt.clf()
     mycursor = mydb.cursor()
 
     totale_piatti = []
@@ -410,17 +383,17 @@ def istoPia():
     mycursor.execute("SELECT primo, secondo, contorno, dolce FROM ordiniconclusi")
     piatti_venduti = mycursor.fetchall()
 
-    for piatto in lista_primi:
-        lista_piatti.append(piatto.piatto)
+    for primo in lista_primi:
+        lista_piatti.append(primo.piatto)
         totale_piatti.append(0)
-    for piatto in lista_secondi:
-        lista_piatti.append(piatto.piatto)
+    for secondo in lista_secondi:
+        lista_piatti.append(secondo.piatto)
         totale_piatti.append(0)
-    for piatto in lista_contorni:
-        lista_piatti.append(piatto.piatto)
+    for contorno in lista_contorni:
+        lista_piatti.append(contorno.piatto)
         totale_piatti.append(0)
-    for piatto in lista_dolci:
-        lista_piatti.append(piatto.piatto)
+    for dolce in lista_dolci:
+        lista_piatti.append(dolce.piatto)
         totale_piatti.append(0)
 
     cont = 0
@@ -441,4 +414,3 @@ def istoPia():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
