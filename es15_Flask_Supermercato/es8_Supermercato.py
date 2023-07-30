@@ -23,28 +23,7 @@ mydb = mysql.connector.connect(
 
 app = Flask(__name__)
 
-class Banco:
-    def __init__(self, prodotto, prezzo):
-        self.prodotto = prodotto
-        self.prezzo = prezzo
-    def __str__(self):
-        return f"€ {self.prezzo} - {self.prodotto}"
-
-class Freschi:
-    def __init__(self, prodotto, prezzo):
-        self.prodotto = prodotto
-        self.prezzo = prezzo
-    def __str__(self):
-        return f"€ {self.prezzo} - {self.prodotto}"
-
-class Frigo:
-    def __init__(self, prodotto, prezzo):
-        self.prodotto = prodotto
-        self.prezzo = prezzo
-    def __str__(self):
-        return f"€ {self.prezzo} - {self.prodotto}"
-
-class Elettrodomestici:
+class Prodotti:
     def __init__(self, prodotto, prezzo):
         self.prodotto = prodotto
         self.prezzo = prezzo
@@ -53,18 +32,18 @@ class Elettrodomestici:
 
 
 #dichiaro e inizializzo prodotti e prezzi
-banco1 = Banco("Pasta", 2)
-banco2 = Banco("Grissini", 3)
-banco3 = Banco("Caffè", 5)
-fresco1 = Freschi("Pomodori", 5)
-fresco2 = Freschi("Melanzane", 3)
-fresco3 = Freschi("Pesche", 2)
-frigo1 = Frigo("Latte", 2)
-frigo2 = Frigo("Yogurt", 1)
-frigo3 = Frigo("Mozzarella", 3)
-elettrodomestico1 = Elettrodomestici("Ventilatore", 20)
-elettrodomestico2 = Elettrodomestici("Condizionatore", 400)
-elettrodomestico3 = Elettrodomestici("Refrigeratore", 200)
+banco1 = Prodotti("Pasta", 2)
+banco2 = Prodotti("Grissini", 3)
+banco3 = Prodotti("Caffè", 5)
+fresco1 = Prodotti("Pomodori", 5)
+fresco2 = Prodotti("Melanzane", 3)
+fresco3 = Prodotti("Pesche", 2)
+frigo1 = Prodotti("Latte", 2)
+frigo2 = Prodotti("Yogurt", 1)
+frigo3 = Prodotti("Mozzarella", 3)
+elettrodomestico1 = Prodotti("Ventilatore", 20)
+elettrodomestico2 = Prodotti("Condizionatore", 400)
+elettrodomestico3 = Prodotti("Refrigeratore", 200)
 lista_banco = []
 lista_freschi = []
 lista_frigo = []
@@ -403,7 +382,7 @@ def statistiche():
         plt.pie(accessi, labels=date, autopct='%1.1f%%')
         plt.title("Accessi per data")
     if istoAccData:
-        plt.bar(date, utente_accessi)
+        plt.bar(date, accessi)
         plt.title("Accessi per data")
         plt.xlabel("Date")
         plt.ylabel("Numero")
