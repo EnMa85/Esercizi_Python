@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Aggiungi appartamento</title>
+    <style>
+        body {
+            background-image: url("{{url_for('static', filename='casa.png')}}");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: -40px -0px;
+            background-color: #DEB887;
+            font-family: Georgia;
+            text-align: center;
+            font-size: 20px;
+            width: 100%;
+            }
+        .benv {
+            font-family: Georgia;
+            font-size: 30px;
+            font-weight: bold;
+            text-align: center;
+            }
+        .input {
+            float: left;
+            height: 15px;
+            width: 25%;
+            border-radius: 5px 5px;
+            float: right;
+            margin-right: 16%;
+            }
+        .text {
+            display: inline;
+            text-align: left;
+            float: left;
+            height: 15px;
+            width: 35%;
+            margin-left: 16%;
+            }
+        .lbl {
+            float: right;
+            width: 60%;
+            }
+        .lbl1 {
+            float: right;
+            width: 30%;
+            margin-right: 15%;
+            text-align: center;
+            }
+        .btn {
+           background-color: white;
+           border: 2px solid #045378;
+           border-radius: 7px 10px;
+           text-align: center;
+           height: 40px;
+           width: 250px;
+           font-size: 16px;
+           font-weight: bold;
+           font-family: Georgia;
+           padding-top: 2px;
+           margin: auto;
+           }
+        .casa {
+            display: block;
+            background-image: url("{{url_for('static', filename='skyline.png')}}");
+            width: 100%;
+            height: 70%;
+            position: absolute;
+            bottom: -35%;
+            }
+    </style>
+  </head>
+<body>
+     {% if appartamento %}
+     <div class="lbl1">
+        <br><h4>Di seguito i dati inseriti:</h4>
+        <hr>
+        <h5>Email: {{appartamento[0]}}</h5>
+        <h5>Appartamento di {{appartamento[1]}} mq, {{appartamento[2]}}° piano, {{appartamento[3]}} stanze</h5>
+        <hr>
+        <h5>Il tuo appartamento verrà presto analizzato.</h5>
+        <br>
+        <h5><a href="/" style="color:#000000">Effettua il logout</a></h5>
+     </div>
+
+     {% else %}
+     <form class="lbl" method="POST" action="/aggiorna">
+        <h2 class="benv">Inserisci qui il tuo appartamento</h2>
+        <br><br>
+        <label class="text" for="proprietario">Inserisci la tua email: </label>
+        <input class="input" type="text" name="proprietario" id="proprietario" required>
+        <br><br>
+        <label class="text" for="superficie">Inserisci la superficie in mq: </label>
+        <input class="input" type="text" name="superficie" id="superficie" required>
+        <br><br>
+        <label class="text" for="piano">Inserisci il piano: </label>
+        <input class="input" type="text" name="piano" id="piano" required>
+        <br><br>
+        <label class="text" for="stanze">Inserisci il numero di stanze: </label>
+        <input class="input" type="text" name="stanze" id="stanze" required>
+        <br><br><br>
+        <input type="submit" name="aggiorna" value="Aggiungi appartamento" class="btn">
+     </form>
+     {% endif %}
+
+    <div class="casa" ><p><br><br><br></p></div>
+</body>
+</html>

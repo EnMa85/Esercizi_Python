@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Agenzia immobiliare Python</title>
+    <style>
+        body {
+            font-family: Georgia;
+            text-align: center;
+            font-size: 15px;
+            }
+        .ammin {
+            font-weight: bold;
+            font-size: 14px;
+            font-family: Georgia;
+            text-align: center;
+           }
+        .benv {
+            font-family: Georgia;
+            font-size: 40px;
+            top: 0px;
+            }
+        .submit {
+            background-color: white;
+            border: 2px solid black;
+            border-radius: 10px 10px;
+            text-align: center;
+            height: 30px;
+            width: 120px;
+            font-size: 15px;
+            font-weight: bold;
+            margin-right: 7px;
+            margin-left: 7px;
+            }
+        .lbl {
+            height: 15px;
+            font-weight: bold;
+            border-radius: 5px 5px;
+            }
+        .casa {
+            display: block;
+            background-image: url("{{url_for('static', filename='skyline.png')}}");
+            background-size: contain;
+            background-repeat: repeat no-repeat;
+            width: 100%;
+            height: 70%;
+            position: absolute;
+            bottom: -25%;
+            }
+    </style>
+</head>
+<body>
+    <h1 class="benv">Benvenuto&ensp;nella&ensp;nostra&ensp;agenzia&ensp;immobiliare!</h1>
+    <br><br>
+    <div>
+        <h3>Accedi o registrati</h3>
+        {% if errore %}
+            <h5> {{ errore }} </h5>
+        {% endif %}
+        <form class="lbl" method="POST" action="/login">
+            <label class="lbl" for="email">Email:</label>
+            <input class="lbl" type="text" name="email" id="email" required>
+            <label class="lbl" for="password">&emsp;&emsp;Password:</label>
+            <input class="lbl" type="password" name="password" id="password" required>
+            <br><br><br>
+            <input class="submit" type="submit" name="accedi" value="Accedi">
+            <input class="submit" type="submit" name="registrati" value="Registrati">
+        </form>
+        <br><br><br><br>
+        <h6 class="ammin"><a href="gestore" style="color:#000000">ENTRA COME GESTORE</a></h6>
+    </div>
+    <div class="casa" ><p><br><br><br></p></div>
+</body>
+</html>
