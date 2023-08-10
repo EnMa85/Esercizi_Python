@@ -7,24 +7,38 @@
     <title>Benvenuti</title>
     <style>
         body {
-            background-image: url("https://media.istockphoto.com/id/537303209/it/vettoriale/white-paper-case-sfondo-laterale.webp?s=1024x1024&w=is&k=20&c=az4X5asOJRDuP52ui-6LSmwLfcePdiKufy8nWD7z0Pg=");
+            background-image: url("https://us.123rf.com/450wm/rraya/rraya2006/rraya200601585/149955302-sfondo-vettoriale-con-case-carine-disegnate-a-mano.jpg?ver=6");
             background-size: cover;
-            background-repeat: no-repeat;
+            background-repeat: repeat;
             font-family: Georgia;
+            font-size: 16px;
+            }
+        .left {
+            width: 30%;
+            margin: auto;
             text-align: center;
-            font-size: 20px;
             }
         .benv {
             font-family: Georgia;
-            font-size: 45px;
+            font-size: 35px;
             font-weight: bold;
+            margin-top: 5%;
             }
-        .aggiungi {
-            width: 40%;
+        .right {
+            display: block;
             float: right;
+            width: 40%;
             margin-right: 10%;
-            border-radius: 7px 10px;
-            padding-right: 9px;
+            text-align: center;
+            }
+        .lista {
+            display: block;
+            float: right;
+            width: 100%;
+            border: 3px solid #045378;
+            font-size: 20px;
+            border-radius: 5px 5px;
+            background-color: #FFFFF0;
             }
         .btn {
            background-color: white;
@@ -40,25 +54,27 @@
     </style>
   </head>
 <body>
-    <div class="aggiungi">
-
-        <h1 class="benv">Benvenuto&ensp;{{nome}}!!!</h1>
-
+    <div class="left">
+        <h4 class="benv">Benvenuto&ensp;{{nome}}!!!</h4>
         <form method="POST" action="/aggiungi">
-             <h5>Hai un appartamento da vendere?</h5>
-             <input type="submit" name="aggiungi" value="Clicca qui" class="btn">
+            <h3>Hai un appartamento da vendere?</h3>
+            <input class="btn" type="submit" name="aggiungi" value="Clicca qui">
+            <br><br>
         </form>
 
-        <br><br><h3>I nostri appartamenti:</h3><br>
-            {% for ap in appartamenti %}
-            <strong>Appartamento {{ap[0]}}:</strong>
-            <p>Recapito proprietario: <strong>{{ap[1]}}</strong></p>
-            <p>Superficie: {{ap[2]}} mq</p>
-            <p>Piano: {{ap[3]}}°</p>
-            <p>Numero stanze: {{ap[4]}}</p>
-            <hr>
-            {% endfor %}
+        <h3><br>I nostri appartamenti:<br></h3>
+        {% for ap in appartamenti %}
+            <div class="lista">
+                <br><strong>Appartamento {{ap[0]}}:</strong>
+                <p>Recapito proprietario: <strong>{{ap[1]}}</strong></p>
+                <p>Superficie: {{ap[2]}} mq</p>
+                <p>Piano: {{ap[3]}}°</p>
+                <p>Numero stanze: {{ap[4]}}</p>
+                <br>
+                <img src="{{ url_for('static', filename='uploads1/' + ap[5]) }}" width="300"><br><br>
+            </div>
+            <p>&ensp;<br></p>
+        {% endfor %}
     </div>
-
 </body>
 </html>
