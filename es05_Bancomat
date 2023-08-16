@@ -1,27 +1,29 @@
 '''
-scrivere una classe contocorrente che rappresenta un conto corrente bancario. Il conto è rappresentato da uno username, un id e un saldo. 
-Successivamente scrivere la classe bancomat e che inizializza una lista di contocorrente e permette di prelevare dal conto, versare sul conto, 
+Scrivere una classe contocorrente che rappresenta un conto corrente bancario. Il conto è rappresentato da uno username, un id e un saldo. 
+Successivamente scrivere la classe bancomat che inizializza una lista di conticorrenti e permette di prelevare dal conto, versare sul conto, 
 fare un bonifico, visualizzare il saldo (plus se nel saldo riusciamo a visualizzare la lista movimenti). 
-Inoltre scrivere un programma che permette all'utente di usufruire del bancomat dopo aver digitato lo username e l'id corretto associato al conto
+Inoltre scrivere un programma che permette all'utente di usufruire del bancomat dopo aver digitato lo username e l'id corretto associato al conto.
 '''
 
+import decimal
 import pickle
 import matplotlib.pyplot as plt
+
 
 class Contocorrente:
     def __init__(self, username, id, saldo):
         self.username = username
         self.id = id
-        self.saldo = saldo
+        self.saldo = decimal.Decimal(saldo)
         self.movimenti = []
         self.bonifici_entrata = 0
         self.bonifici_uscita = 0
         self.versamenti = 0
         self.prelievi = 0
 
-
     def __str__(self):
-        return f"Username: {self.username}, ID conto: {self.id}, Saldo: € {self.saldo}\n"
+        return f"Username: {self.username}, ID conto: {self.id}, Saldo: € {f'{round(self.saldo, 2):,}'}\n"
+
 
 class Bancomat:
     def __init__(self, conti):
@@ -30,101 +32,103 @@ class Bancomat:
     def __str__(self):
         return self.conti
 
+    def prelievo(self, cifra, user_id):
+        for c in self.conti:
+            if c.id == user_id:
+                if c.saldo >= cifra:
+                    c.saldo -= cifra
+                    c.movimenti.append(f"Prelievo: -{f'{round(cifra, 2):,}'}")
+                    c.prelievi += round(cifra, 2)
+                else:
+                    print("\nCifra non disponibile.")
+                print(f"\nIl saldo aggiornato è di € {f'{round(c.saldo, 2):,}'}")
 
-    def prelievo(self, cifra, id):
-        for el in self.conti:
-            if el.id == id:
-                if el.saldo >= cifra:
-                    el.saldo -= cifra
-                    el.movimenti.append(f"Prelievo: -{cifra}\n")
-                    el.prelievi += cifra
-                else: print("\nCifra non disponibile.")
-                print(f"\nIl saldo aggiornato è di € {el.saldo}")
-
-    def versamento(self, cifra, id):
-        for el in self.conti:
-            if el.id == id:
-                el.saldo += cifra
-                el.movimenti.append(f"Versamento: +{cifra}\n")
-                el.versamenti += cifra
-                print(f"\nIl saldo aggiornato è di € {el.saldo}")
+    def versamento(self, cifra, user_id):
+        for x in self.conti:
+            if x.id == user_id:
+                x.saldo += cifra
+                x.movimenti.append(f"Versamento: +{f'{round(cifra, 2):,}'}")
+                x.versamenti += cifra
+                print(f"\nIl saldo aggiornato è di € {f'{round(x.saldo, 2):,}'}")
 
     def bonifico(self, cifra, mittente, destinatario):
         if input("\nScegli 1 per bonifico veloce, un tasto qualsiasi per bonifico normale: ") == "1":
-            comm = 2.50
-        else: comm = 1.10
-        for el in self.conti:
-            if el.id == destinatario:
-                el.saldo += cifra
-                el.bonifici_entrata += cifra
-                el.movimenti.append(f"Bonifico in entrata: +{cifra}\n")
-        for el in self.conti:
-            if el.id == mittente:
-                if el.saldo >= cifra + comm:
-                    el.saldo = el.saldo - cifra - comm
-                    el.movimenti.append(f"Bonifico in uscita: -{cifra}, comm -{comm}\n")
-                    el.bonifici_uscita += (cifra+comm)
-                    print(f"\nIl saldo aggiornato è di € {el.saldo}")
-                else: print("\nCifra non disponibile.")
+            comm = decimal.Decimal(2.50)
+        else:
+            comm = decimal.Decimal(1.10)
+        for dest in self.conti:
+            if dest.id == destinatario:
+                dest.saldo += cifra
+                dest.bonifici_entrata += cifra
+                dest.movimenti.append(f"Bonifico in entrata: +{f'{round(cifra, 2):,}'}")
+        for mitt in self.conti:
+            if mitt.id == mittente:
+                if mitt.saldo >= cifra + comm:
+                    mitt.saldo = mitt.saldo - cifra - comm
+                    mitt.movimenti.append(f"Bonifico in uscita: -{f'{round(cifra, 2):,}'}, comm -{f'{round(comm, 2):,}'}")
+                    mitt.bonifici_uscita += (cifra + comm)
+                    print(f"\nIl saldo aggiornato è di € {f'{round(mitt.saldo, 2):,}'}")
+                else:
+                    print("\nCifra non disponibile.")
 
-    def stampa_saldo(self, id):
-        for el in self.conti:
-            if el.id == id:
-                print(f"\nIl saldo aggiornato è di € {el.saldo}")
+    def stampa_saldo(self, user_id):
+        for y in self.conti:
+            if y.id == user_id:
+                print(f"\n\nIl saldo aggiornato è di € {f'{round(y.saldo, 2):,}'}")
 
-    def stampa_movimenti(self, id):
-        for el in self.conti:
-            if el.id == id:
-                print("\nLa lista dei movimenti: ")
-                for mov in el.movimenti:
+    def stampa_movimenti(self, user_id):
+        for z in self.conti:
+            if z.id == user_id:
+                print("\n\nLa lista dei movimenti: \n")
+                for mov in z.movimenti:
                     print(mov)
 
-    def stampa_grafico(self, id):
+    def stampa_grafico(self, user_id):
         categories = ['Prelievi', 'Versamenti', 'Bonifici\nin\nentrata', 'Bonifici\nin\nuscita']
-        for el in self.conti:
-            if el.id == id:
-                values = [el.prelievi, el.versamenti, el.bonifici_entrata, el.bonifici_uscita]
+        for i in self.conti:
+            if i.id == user_id:
+                values = [round(i.prelievi, 2), round(i.versamenti, 2), round(i.bonifici_entrata, 2), round(i.bonifici_uscita, 2)]
                 plt.pie(values, labels=categories, autopct='%1.1f%%')
                 plt.title("Grafico a torta")
                 plt.show()
 
 
-'''  Da eseguire solo al primo avvio per memorizzare nel file i conti inizializzati'''
-utente1 = Contocorrente("User 1", "01", int(10000))
-utente2 = Contocorrente("User 2", "02", int(30000))
+'''Da eseguire solo al primo avvio per memorizzare nel file i conti inizializzati
+utente1 = Contocorrente("User 1", "01", decimal.Decimal(10000))
+utente2 = Contocorrente("User 2", "02", decimal.Decimal(30000))
 lista_utenti = []
 lista_utenti.append(utente1)
 lista_utenti.append(utente2)
-bancomat = Bancomat(lista_utenti)
 
 f = open("bancomat.pkl", "wb")
 pickle.dump(lista_utenti, f)
-f.close()
+f.close()'''
 
-print("Benvenuto!\n")
 
 f = open("bancomat.pkl", "rb")
 unpickler = pickle.Unpickler(f)
 lista_utenti = unpickler.load()
+bancomat = Bancomat(lista_utenti)
 
-#bancomat = Bancomat(lista_utenti)
+
+print("\n\nBenvenuto!\n")
 
 validation = False
 idcode = 0
-while validation == False:
+while not validation:
     user = input("digita il tuo username: ")
     idcode = input("\ndigita il tuo ID utente: ")
-    for el in lista_utenti:
-        if user == el.username and idcode == el.id:
+    for u in lista_utenti:
+        if user == u.username and idcode == u.id:
             validation = True
             print("\nUtente convalidato.")
-    if validation == False:
+    if not validation:
         print("\nUtente non trovato. Riprova.\n")
 
 scelta = 0
-if validation == True:
+if validation:
     while scelta != "7":
-        scelta = input("\nDigitare\n"
+        scelta = input("\n\nDigitare\n"
                        "1 per prelevare\n"
                        "2 per versare\n"
                        "3 per effettuare un bonifico\n"
@@ -134,14 +138,14 @@ if validation == True:
                        "7 per terminare: ")
 
         if scelta == "1":
-            importo = int(input("\nInserisci la cifra da prelevare: "))
+            importo = decimal.Decimal(input("\nInserisci la cifra da prelevare: "))
             bancomat.prelievo(importo, idcode)
         elif scelta == "2":
-            importo = int(input("\nInserisci la cifra da versare: "))
+            importo = decimal.Decimal(input("\nInserisci la cifra da versare: "))
             bancomat.versamento(importo, idcode)
         elif scelta == "3":
             verso = input("\nInserisci l'id del destinatario: ")
-            importo = int(input("Inserisci l'importo del bonifico: "))
+            importo = decimal.Decimal(input("Inserisci l'importo del bonifico: "))
             bancomat.bonifico(importo, idcode, verso)
         elif scelta == "4":
             bancomat.stampa_saldo(idcode)
@@ -151,10 +155,10 @@ if validation == True:
             bancomat.stampa_grafico(idcode)
         elif scelta == "7":
             pass
-        else: print("Scelta non valida.")
+        else:
+            print("Scelta non valida.")
 
-
-print("\nHo effettuato il logout.\n")
+print("\n\nHo effettuato il logout.\n\n")
 
 f = open("bancomat.pkl", "wb")
 pickle.dump(lista_utenti, f)
