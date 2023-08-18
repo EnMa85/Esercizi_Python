@@ -1,12 +1,8 @@
 '''
-Creiamo una classe auto: ogni auto possiede una marca, un colore e uno stato optional
-che può essere “base” o “full optional”.
-Successivamente creare una finestra dove l’utente può scegliere (ATTRAVERSO UNA COMBOBOX)
-tra una serie di scelte es: “Fiat, Ford, etc.”.
-L’utente cliccando il pulsante riceverà una mail con il prezzo dell’auto da lui scelta
-(inserire una entry per la mai dell’utente).
-Inoltre l’auto opzionata sarà inserita in una tabella di nome autoOpzionata
-con queste intestazioni :id : (potete usare l’autoincrement), marca, colore e prezzo.
+Creiamo una classe auto: ogni auto possiede una marca, un colore e uno stato optional che può essere “base” o “full optional”.
+Successivamente creare una finestra dove l’utente può scegliere (ATTRAVERSO UNA COMBOBOX) tra una serie di scelte es: “Fiat, Ford, etc.”.
+L’utente cliccando il pulsante riceverà una mail con il prezzo dell’auto da lui scelta (inserire una entry per la mai dell’utente).
+Inoltre l’auto opzionata sarà inserita in una tabella di nome autoOpzionata con queste intestazioni :id : (potete usare l’autoincrement), marca, colore e prezzo.
 '''
 
 import tkinter as tk
@@ -16,12 +12,14 @@ import matplotlib.pyplot as plt
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from matplotlib.backends.backend_pdf import PdfPages
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
 
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  password="",
+  password="pyThon23@_",
   database="concessionaria"
 )
 
@@ -45,6 +43,7 @@ mycursor.execute(sql, val)
 mydb.commit()
 '''
 
+
 class Prezzi:
     def __init__(self, elemento, prezzo):
         self.elemento = elemento
@@ -53,7 +52,7 @@ class Prezzi:
 
 def mostra_selezione(listamar, listacol, listadot):
     pag_sel = tk.Tk()
-    pag_sel.geometry('%dx%d+%d+%d' % (500, 360, 450, 200))
+    pag_sel.geometry('%dx%d+%d+%d' % (500, 360, 450, 100))
 
     sel_marca = cbmarche.get()
     sel_colore = cbcolori.get()
@@ -75,6 +74,7 @@ def mostra_selezione(listamar, listacol, listadot):
     btnAnnulla = tk.Button(pag_sel, text="Annulla ordine", command=lambda: pag_sel.destroy(),
                            width=20, height=2, font=("arial", 12, "bold"))
     btnAnnulla.grid(column=1, row=4)
+
 
     # ___________________ SEZIONE CLIENTE _____________________________
     def invia_email(destinatario, oggetto, corpo):
@@ -103,6 +103,7 @@ def mostra_selezione(listamar, listacol, listadot):
         finally:
             server.quit()
 
+
     def invia_preventivo():
         mail = email.get()
         preventivo = 0
@@ -115,19 +116,18 @@ def mostra_selezione(listamar, listacol, listadot):
                         for dotazione in listadot:
                             if sel_dotazione == dotazione.elemento:
                                 preventivo += dotazione.prezzo
-        lbl_prev.configure(text=f"Il prezzo finale è di € {preventivo}")
+        lbl_prev.configure(text=f"Il prezzo finale è di € {f'{preventivo:,}'}")
         btnConferma.configure(text="Invia ordine", command=lambda: [invia_ordine(), pag_sel.destroy(), root.destroy()])
 
         obj = "Richiesta preventivo"
-        body = f"Il prezzo finale è di € {preventivo}"
+        body = f"Il prezzo finale è di € {f'{preventivo:,}'}"
 
         invia_email(mail, obj, body)
 
 
-
         def invia_ordine():
             pag_invia = tk.Tk()
-            pag_invia.geometry('%dx%d+%d+%d' % (500, 360, 450, 200))
+            pag_invia.geometry('%dx%d+%d+%d' % (500, 360, 450, 100))
 
             mycursor = mydb.cursor()
             sql = "INSERT INTO autoOpzionata (Email, Marca, Colore, Dotazione, Prezzo) VALUES (%s, %s, %s, %s, %s)"
@@ -137,7 +137,7 @@ def mostra_selezione(listamar, listacol, listadot):
 
             lbl_conferm = tk.Label(pag_invia, text=f"\nOrdine registrato.\n\n\nDi seguito i dettagli:\n\n "
                             f"{sel_marca}, colore {sel_colore}, {sel_dotazione}.\n\nTotale importo "
-                            f"€ {preventivo}.\n\n\nRiceverai una email di conferma dell'ordine.\n\nGrazie "
+                            f"€ {f'{preventivo:,}'}.\n\n\nRiceverai una email di conferma dell'ordine.\n\nGrazie "
                             f"per averci scelto.\n", width=50, font=("arial", 12, "bold"))
             lbl_conferm.grid(column=0, row=0)
 
@@ -220,7 +220,7 @@ def gestore():
             pag_menu.rowconfigure(4, weight=1)  # riga vuota
 
             grafici = tk.Button(pag_menu, text="Visualizza\nstatistiche", fg="black",
-                                command=lambda: stampa_statistiche(grafici),
+                                command=lambda: stampa_statistiche(),
                                 width=20, height=4, font=("arial", 12, "bold"))
             grafici.grid(column=0, row=5)
 
@@ -232,17 +232,13 @@ def gestore():
 
             pag_menu.rowconfigure(8, weight=1)  # riga vuota
 
+
     def stampa_incassi():
         pag_incassi = tk.Tk()
         pag_incassi.geometry('%dx%d+%d+%d' % (520, 250, 450, 100))
-        mycursor = mydb.cursor()
-        mycursor.execute("SELECT * FROM autoOpzionata")
-        myresult = mycursor.fetchall()
-        totale_incassi = 0
-        for x in myresult:
-            totale_incassi += int(x[5])
+        totale_incassi = calcola_incassi()
 
-        lbl_incassi = tk.Label(pag_incassi, text=f"\nIl totale delle vendite è € {totale_incassi}\n",
+        lbl_incassi = tk.Label(pag_incassi, text=f"\nIl totale delle vendite è € {f'{totale_incassi:,}'}\n",
                                width=40, height=5, font=("arial", 16, "bold"))
         lbl_incassi.grid(column=0, row=0)
 
@@ -250,40 +246,83 @@ def gestore():
                              command=lambda: pag_incassi.destroy(), width=40, height=3, font=("arial", 12, "bold"))
         btn_esci.grid(column=0, row=1)
 
-    def stampa_ordini():
-        stringa_ordini = ""
-        stringa = ""
-        cont = 1
 
+    def calcola_incassi():
+        mycursor = mydb.cursor()
+        mycursor.execute("SELECT * FROM autoOpzionata")
+        myresult = mycursor.fetchall()
+        incassi = 0
+        for x in myresult:
+            incassi += int(x[5])
+        return incassi
+
+
+    def stampa_ordini():
         mycursor = mydb.cursor()
         mycursor.execute("SELECT * FROM autoOpzionata")
         elenco_ord = mycursor.fetchall()
+
         # ricavo una stringa dal database per poterla visualizzare nella label
+        stringa_ordini = "\n"
+        stringa = ""
+        cont = 1
         for riga in elenco_ord:
             cliente = str(riga[1])
             marca = str(riga[2])
             colore = str(riga[3])
             dotazione = str(riga[4])
             prezzo = int(riga[5])
-            stringa_ordini += stringa.join(f"{cont}. {cliente} - {marca} - colore {colore} - dotazione {dotazione}  - € {prezzo}\n")
+            stringa_ordini += stringa.join(f"{cont}. {cliente} - {marca} - colore {colore} - dotazione {dotazione}  - {f'{prezzo:,}'}€\n")
             cont += 1
+
+        #aggiungo il totale incassi
+        tot_incassi = calcola_incassi()
 
         # creo nuova pagina
         pag_ordini = tk.Tk()
-        pag_ordini.geometry('%dx%d+%d+%d' % (600, 400, 450, 100))
+        pag_ordini.geometry('%dx%d+%d+%d' % (620, 450, 450, 100))
 
         lbl_lista = tk.Label(pag_ordini, text="\nEcco l'elenco degli ordini ricevuti:\n",
-                             width=60, font=("arial", 12, "bold"))
+                             width=50, font=("arial", 12, "bold"))
         lbl_lista.grid(column=0, row=0, columnspan=2)
 
-        lbl_ordini = tk.Label(pag_ordini, text=stringa_ordini, width=60, font=("arial", 13))
+        lbl_ordini = tk.Label(pag_ordini, text=stringa_ordini, justify="left", width=70, font=("arial", 13))
         lbl_ordini.grid(column=0, row=1, columnspan=2)
 
-        btn_esci = tk.Button(pag_ordini, text="Torna al menù precedente", fg="black",
-                             command=lambda: pag_ordini.destroy(), width=60, height=3, font=("arial", 12, "bold"))
-        btn_esci.grid(column=1, row=2)
+        lbl_incassi = tk.Label(pag_ordini, text=f"\n\nIl totale delle vendite è {f'{tot_incassi:,}'}€\n\n\n\n",
+                               width=50, font=("arial", 12, "bold"))
+        lbl_incassi.grid(column=0, row=2, columnspan=2)
 
-    def stampa_statistiche(bottone):
+        btn_salva = tk.Button(pag_ordini, text="Salva lista", fg="black",
+                             command=lambda: salva_reportlab_pdf(elenco_ord, tot_incassi, btn_salva),
+                             width=20, height=3, font=("arial", 12, "bold"))
+        btn_salva.grid(column=0, row=3)
+
+        btn_esci = tk.Button(pag_ordini, text="Torna al menù precedente", fg="black",
+                             command=lambda: pag_ordini.destroy(), width=20, height=3, font=("arial", 12, "bold"))
+        btn_esci.grid(column=1, row=3)
+
+
+    def salva_reportlab_pdf(elenco, totale, button):
+        # Creo un nuovo documento PDF con reportlab
+        doc = SimpleDocTemplate("lista_ordini.pdf", pagesize=letter)
+        styles = getSampleStyleSheet()
+        # Aggiungo la lista testuale al documento PDF tramite un ciclo
+        content = []
+        content.append(Paragraph(f"Elenco ordini:\n\n", styles['Heading2']))
+        cont = 1
+        for riga in elenco:
+            content.append(Paragraph(f"{cont}. {riga[1]} - {riga[2]} - colore {riga[3]} - dotazione {riga[4]} - {f'{int(riga[5]):,}'} €\n", styles['Heading4']))
+            cont += 1
+        # Aggiungo l'incasso totale al documento PDF
+        content.append(Spacer(1, 12))
+        content.append(Paragraph(f"Incasso Totale: {f'{totale:,}'} €", styles['Heading2']))
+        #Salvo la lista
+        doc.build(content)
+        button.configure(text="Lista salvata")
+
+
+    def stampa_statistiche():
         tot_fiat = 0
         tot_peugeot = 0
         tot_toyota = 0
@@ -303,7 +342,7 @@ def gestore():
             if riga[1] not in lista_mail:
                 lista_mail.append(str(riga[1]))
 
-        # Creo una somma di prezzi per ogni mail
+        # Creo una somma di prezzi per ogni email
         for mail in lista_mail:
             for riga in myresult:
                 if str(mail) == str(riga[1]):
@@ -366,10 +405,6 @@ def gestore():
         plt.tight_layout()
         plt.show()
 
-
-
-
-
 #______________________FINE SEZIONE GESTORE  _______________________
 
 #inizializzazione lista auto
@@ -406,7 +441,7 @@ listino_dotazioni.append(dotazione2)
 #Interfaccia pagina iniziale
 root = tk.Tk()
 
-root.geometry('%dx%d+%d+%d' % (500, 300, 450, 200))
+root.geometry('%dx%d+%d+%d' % (500, 300, 450, 100))
 
 lbl_benvenuto = tk.Label(root, text="\nBenvenuto nella nostra concessionaria!\n\nConfigura il tuo modello:\n",
                          width=50, height=4, font=("arial", 13, "bold"))
