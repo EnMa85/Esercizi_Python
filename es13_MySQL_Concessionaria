@@ -107,15 +107,17 @@ def mostra_selezione(listamar, listacol, listadot):
     def invia_preventivo():
         mail = email.get()
         preventivo = 0
+
         for marca in listamar:
             if sel_marca == marca.elemento:
                 preventivo += marca.prezzo
-                for colore in listacol:
-                    if sel_colore == colore.elemento:
-                        preventivo += colore.prezzo
-                        for dotazione in listadot:
-                            if sel_dotazione == dotazione.elemento:
-                                preventivo += dotazione.prezzo
+        for colore in listacol:
+            if sel_colore == colore.elemento:
+                preventivo += colore.prezzo
+        for dotazione in listadot:
+            if sel_dotazione == dotazione.elemento:
+                preventivo += dotazione.prezzo
+
         lbl_prev.configure(text=f"Il prezzo finale è di € {f'{preventivo:,}'}")
         btnConferma.configure(text="Invia ordine", command=lambda: [invia_ordine(), pag_sel.destroy(), root.destroy()])
 
