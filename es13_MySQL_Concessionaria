@@ -58,21 +58,20 @@ def mostra_selezione(listamar, listacol, listadot):
     sel_colore = cbcolori.get()
     sel_dotazione = cboptionals.get()
 
-    lbl = tk.Label(pag_sel, text=f"\n\nLa tua selezione:\n\n {sel_marca}, colore {sel_colore}, {sel_dotazione}.\n\n",
-                            width=50, height=5, font=("arial", 12, "bold"))
+    lbl = tk.Label(pag_sel, text=f"\n\nLa tua selezione:\n\n {sel_marca}, colore {sel_colore}, {sel_dotazione}.\n\n", width=50, height=5, font=("arial", 12, "bold"))
     lbl.grid(column=0, row=0, columnspan=2)
-    lbl_mail = tk.Label(pag_sel, text="Inserisci email per richiedere il preventivo", width=40, height=4,
-                        font=("arial", 11, "bold"))
+
+    lbl_mail = tk.Label(pag_sel, text="Inserisci email per richiedere il preventivo", width=40, height=4, font=("arial", 11, "bold"))
     lbl_mail.grid(column=0, row=1, columnspan=2)
     email = tk.Entry(pag_sel, width=30)
     email.grid(column=0, row=2, columnspan=2)
+
     lbl_prev = tk.Label(pag_sel, width=40, height=5, font=("arial", 12, "bold"))
     lbl_prev.grid(column=0, row=3, columnspan=2)
-    btnConferma = tk.Button(pag_sel, text="Richiedi preventivo",
-                  command=lambda: invia_preventivo(), width=20, height=2, font=("arial", 12, "bold"))
+
+    btnConferma = tk.Button(pag_sel, text="Richiedi preventivo", command=lambda: invia_preventivo(), width=20, height=2, font=("arial", 12, "bold"))
     btnConferma.grid(column=0, row=4)
-    btnAnnulla = tk.Button(pag_sel, text="Annulla ordine", command=lambda: pag_sel.destroy(),
-                           width=20, height=2, font=("arial", 12, "bold"))
+    btnAnnulla = tk.Button(pag_sel, text="Annulla ordine", command=lambda: pag_sel.destroy(),width=20, height=2, font=("arial", 12, "bold"))
     btnAnnulla.grid(column=1, row=4)
 
 
@@ -143,8 +142,7 @@ def mostra_selezione(listamar, listacol, listadot):
                             f"per averci scelto.\n", width=50, font=("arial", 12, "bold"))
             lbl_conferm.grid(column=0, row=0)
 
-            btnEsc = tk.Button(pag_invia, text="Esci", command=lambda: pag_invia.destroy(),
-                                   width=20, height=2, font=("arial", 12, "bold"))
+            btnEsc = tk.Button(pag_invia, text="Esci", command=lambda: pag_invia.destroy(), width=20, height=2, font=("arial", 12, "bold"))
             btnEsc.grid(column=0, row=1)
 
 #______________________FINE SEZIONE CLIENTE  _______________________
