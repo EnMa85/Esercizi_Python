@@ -19,7 +19,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  password="pyThon23@_",
+  password="",
   database="concessionaria"
 )
 
