@@ -351,7 +351,7 @@ def gestore():
 
         sql = "SELECT * FROM autoOpzionata WHERE marca = 'Toyota'"
         mycursor.execute(sql)
-        lista_toyota = mycursor.fetchall()
+        lista_auto = mycursor.fetchall()
         for auto in lista_auto:
             prezzo = int(auto[5])
             tot_toyota += prezzo
