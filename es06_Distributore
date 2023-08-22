@@ -8,6 +8,13 @@ versare dei soldi nel conto. Il programma nel menu utente permette anche di crea
 #importa metodo che sospende il programma per n secondi
 from time import sleep
 
+#per generare un numero casuale (l'ID)
+import random
+
+#per dichiarare numeri decimali
+import decimal
+
+
 #contiene saldo ed id utente univoco
 class Conto:
     def __init__(self, saldo, id):
@@ -15,7 +22,7 @@ class Conto:
         self.id = id
 
     def __str__(self):
-        return (f"\nIl saldo del conto è: {self.saldo}")
+        return (f"\nIl saldo del conto è: {round(self.saldo, 2)}")
 
 #contiene un elenco di conti
 class Distributore:
@@ -36,76 +43,79 @@ class Distributore:
                 for conto in self.conti:
                     if conto.id == id_attivo:
                         #verifica che il saldo sia sufficiente
-                        if(conto.saldo >= pr):
+                        if conto.saldo >= pr:
                             print(f"\nErogazione {bev} in corso...")
                             conto.saldo -= pr
-                            sleep(1)
-                            print("Erogazione effettuata.\n")
-                            print(f"Il tuo saldo aggiornato è di € {conto.saldo}")
-                        else: print("Saldo non sufficiente, effettua un versamento.\n")
+                            sleep(2)
+                            print("\nErogazione effettuata.\n")
+                            print(f"Il tuo saldo aggiornato è di € {round(conto.saldo, 2)}")
+                        else:
+                            print("Saldo non sufficiente, effettua un versamento.\n")
 
     def versamento(self, cifra, id_attivo):
-        for el in self.conti:
-            if el.id == id_attivo:
-                el.saldo += cifra
-                print(f"\nIl saldo aggiornato è di € {el.saldo}")
+        for x in self.conti:
+            if x.id == id_attivo:
+                x.saldo += cifra
+                print(f"\nIl saldo aggiornato è di € {round(x.saldo, 2)}")
 
     def nuovo_id(self):
-        nuovo_id = Conto(0, (len(self.conti)+1))
-        self.conti.append(nuovo_id)
-        return nuovo_id.id
+        assegna = False
+        while not assegna:
+            nuovo_id = random.randint(10000, 99999)
+            if nuovo_id not in self.conti:
+                nuovo_utente = Conto(decimal.Decimal(0.00), nuovo_id)
+                self.conti.append(nuovo_utente)
+                assegna = True
+        return nuovo_id
 
     def saldo(self, id_attivo):
-        for el in self.conti:
-            if el.id == id_attivo:
-                print(f"\nIl tuo saldo è di € {el.saldo}")
+        for y in self.conti:
+            if y.id == id_attivo:
+                print(f"\nIl tuo saldo è di € {round(y.saldo, 2)}")
 
 #inizializza due utenti di tipo class Conto
-id1 = Conto(2.0, 1)
-id2 = Conto(7.5, 2)
+id1 = Conto(decimal.Decimal(2.00), 11111)
+id2 = Conto(decimal.Decimal(7.50), 22222)
 
 #crea una lista e ci inserisce i due id conti creati
-lista_conti = []
-lista_conti.append(id1)
-lista_conti.append(id2)
+lista_conti = [id1, id2]
 
 #inserisce in un elenco di tipo Distributore la lista appena creata di conti di tipo Conto
 distr1 = Distributore(lista_conti)
 
-
 dizio_bevande = {
-    "Caffe"      : 0.80,
-    "The"        : 1.20,
-    "Acqua"      : 1.00,
-    "Cioccolata" : 1.10
+    "Caffe"      : decimal.Decimal(round(0.80, 2)),
+    "The"        : decimal.Decimal(round(1.20, 2)),
+    "Acqua"      : decimal.Decimal(round(1.00, 2)),
+    "Cioccolata" : decimal.Decimal(round(1.10, 2))
 }
-
-
-print("Benvenuto!!!")
 
 scelta = 0
 validation = False
 idcode = 0
 
+
+print("Benvenuto!!!")
+
 #ripete la sequenza finchè non viene inserito un id utente valido
 while scelta != "1" and scelta != "2":
-    scelta = input("\nDigita 1 per creare un nuovo utente, 2 per accedere con il tuo ID: ")
+    scelta = input("\nDigita 1 per abilitare una nuova chiavetta, 2 per accedere con il tuo ID: ")
     if scelta == "1":
         #crea un nuovo ID e poi imposta la scelta su 2 per slittare l'utente nella fase di login
-        nuovo_id = distr1.nuovo_id()
-        print(f"\nNuovo utente creato. Il tuo ID è {nuovo_id}.\nInserisci la chiave ed effettua un versamento per effettuare altre operazioni: \n")
+        nuovoid = distr1.nuovo_id()
+        print(f"\nNuovo utente creato. L'ID associato alla tua chiavetta è {nuovoid}.\n\nAccedi ed effettua un versamento per effettuare altre operazioni.")
         scelta = "2"
 
     if scelta == "2":
         #ripete la sequenza finchè non riconosce un utente valido
-        while validation == False:
+        while not validation:
             #salva l'id dell'utente corrente per passarlo ai vari metodi
-            idcode = int(input("\ninserisci la tua chiave ID: "))
+            idcode = int(input("\nInserisci la chiavetta ed il tuo ID: "))
             for el in lista_conti:
                 if idcode == el.id:
                     validation = True
                     print("\nChiave valida.")
-            if validation == False:
+            if not validation:
                 print("\nChiave non riconosciuta. Riprova.\n")
 
 cont = 0
@@ -113,7 +123,7 @@ scelta = 0
 bevanda = 0
 
 #dopo aver validato l'utente, verifica nuovamente che lo stato sia validato e stampa il menù di scelta
-if validation == True:
+if validation:
     while scelta != "4":
         scelta = input("\nDigitare\n"
                        "1 per scegliere una bevanda\n"
@@ -125,13 +135,13 @@ if validation == True:
         if scelta == "1":
             print("\n")
             for bevanda, prezzo in dizio_bevande.items():
-                print(f"{cont+1}. {bevanda}: € {prezzo}")
+                print(f"{cont+1}. {bevanda}: € {round(prezzo, 2)}")
                 cont += 1
             bevanda = int(input("\nInserisci il codice della bevanda: "))
             distr1.eroga(dizio_bevande, bevanda, idcode)
 
         elif scelta == "2":
-            distr1.versamento(int(input("Versa cifra: ")), idcode)
+            distr1.versamento(decimal.Decimal(input("\nVersa cifra: ")), idcode)
 
         elif scelta == "3":
             distr1.saldo(idcode)
@@ -139,5 +149,6 @@ if validation == True:
         elif scelta == "4":
             print("\nHo effettuato il logout.\n")
             exit()
-            
-        else: print("Scelta non valida.")
+
+        else: 
+            print("Scelta non valida.")
