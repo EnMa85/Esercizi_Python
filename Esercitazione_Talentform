@@ -1,0 +1,440 @@
+import random
+from datetime import datetime
+import tkinter as tk
+from tkinter import *
+from tkinter import messagebox
+import mysql.connector
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.lib.styles import getSampleStyleSheet
+
+
+mydb = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="",
+    database="warehouse"
+)
+
+
+class Window(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title('Gestione magazzino  🏭')
+        self.configure(background='#a3c1c3')
+        self.resizable(True, True)
+        # centers the window
+        self.eval('tk::PlaceWindow . center')
+
+
+def login():
+    user = name.get()
+    passw = pw.get()
+    # save the users list from database
+    mycursor = mydb.cursor()
+    sql = "SELECT * FROM users"
+    mycursor.execute(sql)
+    user_list = mycursor.fetchall()
+    # compares the entered credentials with the db list
+    access = False
+    for line in user_list:
+        # if the credentials are correct save the access in the database
+        if user == line[1] and passw == line[2]:
+            access = True
+            access_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            save_login(line[0], access_date)
+        # with a valid access, calls the index function with the name of the user as argument and close login window
+        if access:
+            index(user)
+            login_win.destroy()
+        # with invalid access display a popup message
+        if not access:
+            messagebox.showinfo("Errore", "Accesso negato, credenziali invalide.")
+
+
+# saves the access date in the database
+def save_login(user_id, date):
+    try:
+        connection = mysql.connector.connect(
+            host='localhost',
+            user='root',
+            password='pyThon23@_',
+            database='warehouse'
+        )
+        cursor = connection.cursor()
+        query = "INSERT INTO logs (id_user, last_access) VALUES (%s, %s)"
+        values = (user_id, date)
+        cursor.execute(query, values)
+        connection.commit()
+        print("Accesso salvato correttamente.")
+    except mysql.connector.Error as error:
+        print("Errore durante il salvataggio dei dati:", error)
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
+
+
+# defines index menu
+def index(current_user):
+    index_win = Window()
+    # ----- defines INDEX WINDOW line by line --------------------------------------------------------------------------
+    welcome_lbl = tk.Label(index_win, text=f"Sei loggato come {current_user.capitalize()}", height=2, width=52, font=30, background='#18656a')
+    welcome_lbl.grid(column=0, row=0, columnspan=3, ipady=4)
+    product_btn = tk.Button(index_win, text="GESTIONE\nPRODOTTI\n\n🛒 🗄🗄🗄", font=24, width=13, command=product, background='#74a3a6')
+    product_btn.grid(column=0, row=2, padx=10, pady=40, ipadx=5, ipady=12)
+    order_btn = tk.Button(index_win, text="GESTIONE\nORDINI\n\n📝 📦", font=24, width=13, command=orders, background='#74a3a6')
+    order_btn.grid(column=1, row=2, padx=10, pady=40, ipadx=5, ipady=12)
+    notification_btn = tk.Button(index_win, text="VISUALIZZA\nNOTIFICHE\n\n📢 📆", font=24, width=13, command=notifications, background='#74a3a6')
+    notification_btn.grid(column=2, row=2, padx=10, pady=40, ipadx=5, ipady=12)
+    index_win.rowconfigure(3, weight=1)  # empty line
+    exit_btn = tk.Button(index_win, text="Effettua il logout", command=lambda: index_win.destroy(), width=30, font=25, background='#468488')
+    exit_btn.grid(column=0, row=4, columnspan=3, padx=20, pady=20, ipady=10)
+    # ----- END of index window ----------------------------------------------------------------------------------------
+
+
+# --------- PRODUCT SECTION -------------------------------------------------------------------------------------------
+def product():
+    product_win = Window()
+    # ----- defines PRODUCT WINDOW line by line ------------------------------------------------------------------------
+    menu_lbl = tk.Label(product_win, text="Sei nella pagina di gestione prodotti.\nSeleziona un'operazione.", width=52, height=4, font=("arial", 14, 'bold'), background='#18656a')
+    menu_lbl.grid(column=0, row=0)
+    list_btn = tk.Button(product_win, text="Stampa lista prodotti", command=lambda: display_products(), width=30, height=2, font=("arial", 12, "bold"), background='#74a3a6')
+    list_btn.grid(column=0, row=1, pady=15)
+    add_btn = tk.Button(product_win, text="Aggiungi prodotto", command=lambda: add_product(), width=30, height=2, font=("arial", 12, "bold"), background='#74a3a6')
+    add_btn.grid(column=0, row=2, pady=15)
+    del_btn = tk.Button(product_win, text="Elimina prodotto", command=lambda: del_product(), width=30, height=2, font=("arial", 12, "bold"),background='#74a3a6')
+    del_btn.grid(column=0, row=3, pady=15)
+    mod_btn = tk.Button(product_win, text="Modifica quantità", command=lambda: mod_product(), width=30, height=2, font=("arial", 12, "bold"), background='#74a3a6')
+    mod_btn.grid(column=0, row=4, pady=15)
+    cls_btn = tk.Button(product_win, text="Torna al menù precedente", command=lambda: product_win.destroy(), width=40, height=2, font=("arial", 12, "bold"), background='#468488')
+    cls_btn.grid(column=0, row=5, pady=15)
+    # ----- END of product window --------------------------------------------------------------------------------------
+
+
+    # print products list in a grid and saves as pdf file
+    def display_products():
+        # saves orders list from database
+        mycursor = mydb.cursor()
+        sql = "SELECT * FROM products"
+        mycursor.execute(sql)
+        product_list = mycursor.fetchall()
+        # opens a new window
+        print_win = Window()
+        # creates the header for the grid
+        lbl = Label(print_win, width=10, text='ID code', font=("arial", 14, "bold"), background='#468488')
+        lbl.grid(row=0, column=0, pady=5)
+        lbl = Label(print_win, width=10, text='Name', font=("arial", 14, "bold"), background='#468488')
+        lbl.grid(row=0, column=1, pady=5)
+        lbl = Label(print_win, width=10, text='Product code', font=("arial", 14, "bold"), background='#468488')
+        lbl.grid(row=0, column=2, pady=5)
+        lbl = Label(print_win, width=10, text='Quantity', font=("arial", 14, "bold"), background='#468488')
+        lbl.grid(row=0, column=3, pady=5)
+        # compiles the grid printing rows in the labels with a loop
+        line = 1
+        column = 0
+        for prod in product_list:
+            for col in range(len(prod)):
+                lbl = tk.Entry(print_win, font=("arial", 14), background='#a3c1c3', width=7)
+                lbl.grid(row=line, column=col, pady=5)
+                lbl.insert(END, prod[col])
+                # colors red if quantity is 0
+                if int(prod[3]) < 1:
+                    lbl.configure(foreground='red')
+                column += 1
+            line += 1
+        # creates buttons
+        close_btn = tk.Button(print_win, text="Torna al menù precedente", command=lambda: print_win.destroy(), width=35, height=2, font=("arial", 11, "bold"), background='#468488')
+        close_btn.grid(column=1, row=len(product_list) + 1, pady=10, columnspan=2)
+
+
+    # function to add a new product
+    def add_product():
+        # ----- open a new window with the entry form ------------------------------------------------------------------
+        ins_win = Window()
+        tit_lbl = tk.Label(ins_win, text="Inserisci dati prodotto.", width=35, height=2, font=("arial", 14, 'bold'), background='#74a3a6')
+        tit_lbl.grid(column=0, row=0, columnspan=3)
+        prod_lbl = tk.Label(ins_win, text="Nome prodotto", width=25, height=2, font=("arial", 12), background='#a3c1c3')
+        prod_lbl.grid(column=0, row=1, pady=5)
+        prod = tk.Entry(ins_win, width=15)
+        prod.grid(column=1, row=1, pady=5, padx=30)
+        cod_lbl = tk.Label(ins_win, text="Codice prodotto", width=25, height=2, font=("arial", 12), background='#a3c1c3')
+        cod_lbl.grid(column=0, row=2, pady=5)
+        cod = tk.Entry(ins_win, width=15)
+        cod.grid(column=1, row=2, pady=5, padx=30)
+        q_lbl = tk.Label(ins_win, text="Quantità", width=25, height=2, font=("arial", 12), background='#a3c1c3')
+        q_lbl.grid(column=0, row=3, pady=5)
+        q = tk.Entry(ins_win, width=15)
+        q.grid(column=1, row=3, pady=5, padx=30)
+        confins_lbl = tk.Label(ins_win, font=("arial", 12), background='#a3c1c3')
+        confins_lbl.grid(column=0, row=4, columnspan=3)
+        subins_btn = tk.Button(ins_win, text="Conferma", command=lambda: db_insert(), width=30, height=2, font=("arial", 12, "bold"), background='#468488')
+        subins_btn.grid(column=0, row=5, columnspan=3, padx=15, pady=10)
+        # --------------------------------------------------------------------------------------------------------------
+
+
+        # saves new product into database
+        def db_insert():
+            mycursor = mydb.cursor()
+            sql = "INSERT INTO products (name, code, quantity) VALUES (%s, %s, %s)"
+            a = prod.get()
+            b = cod.get()
+            c = q.get()
+            val = (a, b, c)
+            mycursor.execute(sql, val)
+            mydb.commit()
+            # creates notification
+            notify(f"Caricato stock prodotto {a} cod.{b}")
+            # print confirm in the label
+            confins_lbl.configure(text='Operazione effettuata')
+            subins_btn.configure(text="Chiudi", command=lambda: ins_win.destroy())
+
+
+    # function to delete a selected product
+    def del_product():
+        # open a new window that ask the code of the product to delete
+        del_win = Window()
+        tit_lbl = tk.Label(del_win, text="Inserisci dati prodotto.", width=35, height=2, font=("arial", 14, 'bold'), background='#74a3a6')
+        tit_lbl.grid(column=0, row=0, columnspan=3)
+        del_lbl = tk.Label(del_win, text="Codice del prodotto da eliminare", width=35, height=3, font=("arial", 12), background='#a3c1c3')
+        del_lbl.grid(column=0, row=1, pady=10)
+        delp = tk.Entry(del_win, width=10)
+        delp.grid(column=1, row=1, pady=10, padx=20)
+        confdel_lbl = tk.Label(del_win, background='#a3c1c3')
+        confdel_lbl.grid(column=0, row=2, columnspan=3)
+        subdel_btn = tk.Button(del_win, text="Conferma", command=lambda: [db_delete(), del_win.destroy()], width=20, height=2, font=("arial", 10, "bold"), background='#74a3a6')
+        subdel_btn.grid(column=0, row=2, pady=10, columnspan=3)
+
+
+        #delete a selected product from database
+        def db_delete():
+            prod_to_del = delp.get()
+            mycursor = mydb.cursor()
+            sql = "DELETE FROM products WHERE code = %s"
+            val = (prod_to_del,)
+            mycursor.execute(sql, val)
+            mydb.commit()
+            # creates notification
+            notify(f"Smaltito stock prodotto cod.{str(prod_to_del)}")
+            # print confirm in the label
+            print("Cancellazione effettuata")
+
+
+    # function to modify quantity of a selected product
+    def mod_product():
+        # open a new window that ask the code of the product and new quantity
+        del_win = Window()
+        tit_lbl = tk.Label(del_win, text="Inserisci dati prodotto.", width=35, height=2, font=("arial", 14, 'bold'), background='#74a3a6')
+        tit_lbl.grid(column=0, row=0, columnspan=3)
+        cod_lbl = tk.Label(del_win, text="Codice prodotto", width=25, height=2, font=("arial", 12), background='#a3c1c3')
+        cod_lbl.grid(column=0, row=1, pady=5)
+        cod = tk.Entry(del_win, width=15)
+        cod.grid(column=1, row=1, pady=5, padx=30)
+        q_lbl = tk.Label(del_win, text="Nuova quantità", width=25, height=2, font=("arial", 12), background='#a3c1c3')
+        q_lbl.grid(column=0, row=2, pady=5)
+        q = tk.Entry(del_win, width=15)
+        q.grid(column=1, row=2, pady=5, padx=30)
+        confdel_lbl = tk.Label(del_win, background='#a3c1c3')
+        confdel_lbl.grid(column=0, row=3, columnspan=3)
+        subdel_btn = tk.Button(del_win, text="Conferma", command=lambda: [update_quantity(q.get(), cod.get()), del_win.destroy()], width=20, height=2, font=("arial", 10, "bold"), background='#74a3a6')
+        subdel_btn.grid(column=0, row=4, pady=10, columnspan=3)
+# --------- END of products section ------------------------------------------------------------------------------------
+
+
+# --------- ORDER SECTION ----------------------------------------------------------------------------------------------
+def orders():
+    order_win = Window()
+    # ----- defines ORDER WINDOW line by line ------------------------------------------------------------------------
+    menu_lbl = tk.Label(order_win, text="Sei nella pagina degli ordini.\nSeleziona un'operazione.", width=52, height=4, font=("arial", 14, 'bold'), background='#18656a')
+    menu_lbl.grid(column=0, row=0)
+    list_btn = tk.Button(order_win, text="Stampa lista ordini", command=lambda: print_orders(), width=30, height=2, font=("arial", 12, "bold"), background='#74a3a6')
+    list_btn.grid(column=0, row=1, pady=15)
+    add_btn = tk.Button(order_win, text="Registra ordine", command=lambda: add_order(), width=30, height=2, font=("arial", 12, "bold"), background='#74a3a6')
+    add_btn.grid(column=0, row=2, pady=15)
+    cls_btn = tk.Button(order_win, text="Torna al menù precedente", command=lambda: order_win.destroy(), width=40, height=2, font=("arial", 12, "bold"), background='#468488')
+    cls_btn.grid(column=0, row=3, pady=10)
+    # ----- END of order window ----------------------------------------------------------------------------------------
+
+
+    # print as pdf file a list of orders
+    def print_orders():
+        # saves updated list of orders from database
+        mycursor = mydb.cursor()
+        sql = "SELECT * FROM orders"
+        mycursor.execute(sql)
+        order_list = mycursor.fetchall()
+        # transforms the list in a string to be able to display it in the label
+        order_string = "\n"
+        string = ""
+        for ord in order_list:
+            idord = str(ord[0])
+            code = str(ord[1])
+            quantity = str(ord[2])
+            ship = str(ord[3])
+            order_string += string.join(f"{idord}  -  cod.{code}  -  quantità: {quantity}  -  shipping code: {ship}\n")
+        # open a new window to print and save list
+        print_win = Window()
+        head_lbl = tk.Label(print_win, text="\nElenco ordini:\n", width=45, font=("arial", 14, "bold"), background='#a3c1c3')
+        head_lbl.grid(column=0, row=0, columnspan=2)
+        print_lbl = tk.Label(print_win, text=order_string, justify="left", width=45, font=("arial", 14), background='#a3c1c3')
+        print_lbl.grid(column=0, row=1, columnspan=2)
+        save_btn = tk.Button(print_win, text="Salva lista", command=lambda: save_reportlab_pdf(order_list, save_btn, "lista_ordini"), width=24, height=2, font=("arial", 11, "bold"), background='#468488')
+        save_btn.grid(column=0, row=2, pady=20)
+        cls_btn = tk.Button(print_win, text="Torna al menù precedente", command=lambda: print_win.destroy(), width=24, height=2, font=("arial", 11, "bold"), background='#468488')
+        cls_btn.grid(column=1, row=2, pady=20)
+
+
+    # function to add a new order
+    def add_order():
+        shipping = random.randrange(10000, 99999)
+        # ----- open a new window with the entry form ------------------------------------------------------------------
+        insord_win = Window()
+        tit_lbl = tk.Label(insord_win, text="Inserisci dati ordine.", width=35, height=2, font=("arial", 14, 'bold'), background='#74a3a6')
+        tit_lbl.grid(column=0, row=0, columnspan=3)
+        cod_lbl = tk.Label(insord_win, text="Codice prodotto", width=25, height=2, font=("arial", 12), background='#a3c1c3')
+        cod_lbl.grid(column=0, row=1, pady=5)
+        cod = tk.Entry(insord_win, width=15)
+        cod.grid(column=1, row=1, pady=5, padx=30)
+        q_lbl = tk.Label(insord_win, text="Quantità", width=25, height=2, font=("arial", 12), background='#a3c1c3')
+        q_lbl.grid(column=0, row=2, pady=5)
+        q = tk.Entry(insord_win, width=15)
+        q.grid(column=1, row=2, pady=5, padx=30)
+        confins_lbl = tk.Label(insord_win, font=("arial", 12), background='#a3c1c3')
+        confins_lbl.grid(column=0, row=3, columnspan=3)
+        subins_btn = tk.Button(insord_win, text="Conferma", command=lambda: db_ord_insert(), width=35, height=2, font=("arial", 12, "bold"), background='#468488')
+        subins_btn.grid(column=0, row=4, columnspan=3, padx=15, pady=10)
+        # --------------------------------------------------------------------------------------------------------------
+
+
+        # saves new order into database
+        def db_ord_insert():
+            # data to insert
+            a = cod.get()
+            b = q.get()
+            c = shipping
+            d = datetime.now()
+            # saves a copy of product list to verify product and quantity
+            mycursor = mydb.cursor()
+            sql = "SELECT * FROM products"
+            mycursor.execute(sql)
+            code_list = mycursor.fetchall()
+            # checks if the product code exists
+            existing_code = False
+            for prod in code_list:
+                if a == prod[2]:
+                    existing_code = True
+                    stock = int(prod[3])
+            # if code doesn't exist, prints a message in the label
+            if not existing_code:
+                confins_lbl.configure(text=f"Il codice prodotto non esiste.")
+                subins_btn.configure(text="Chiudi", command=lambda: insord_win.destroy())
+            # if code is correct, continues to save and checks availability
+            elif stock >= int(b):
+                sql = "INSERT INTO orders (code, quantity, shipping_code, date) VALUES (%s, %s, %s, %s)"
+                val = (a, b, c, d)
+                mycursor.execute(sql, val)
+                mydb.commit()
+                # updates product quantity in the database
+                new_q = int(stock) - int(b)
+                update_quantity(new_q, a)
+                # creates notification
+                notify("Registrato nuovo ordine")
+                # print confirm in the label
+                confins_lbl.configure(text=f"Conferma inserimento. Il codice di spedizione è: {shipping}")
+                subins_btn.configure(text="Chiudi", command=lambda: insord_win.destroy())
+            # if quantity is insufficient, prints a message in the label
+            else:
+                confins_lbl.configure(text=f"La quantità in magazzino è insufficiente per completare l'ordine.")
+                subins_btn.configure(text="Chiudi", command=lambda: insord_win.destroy())
+# --------- END of orders section --------------------------------------------------------------------------------------
+
+
+# --------- NOTIFICATIONS SECTION --------------------------------------------------------------------------------------
+def notifications():
+    # saves notifications list from database
+    mycursor = mydb.cursor()
+    sql = "SELECT * FROM notifications"
+    mycursor.execute(sql)
+    note_list = mycursor.fetchall()
+    # opens a new window and adds a listbox with scrollbar
+    note_win = Window()
+    listbox = Listbox(note_win)
+    listbox.grid(row=1, column=0, pady=5)
+    scrollbar = Scrollbar(note_win)
+    scrollbar.grid(row=1, column=1, sticky='ns')
+    # adds header
+    lbl = tk.Label(note_win, text=f"Elenco delle notifiche", height=2, width=50, font=("arial", 15, 'bold'), background='#18656a')
+    lbl.grid(column=0, row=0, columnspan=2, ipady=1)
+    # compiles the list printing rows in the box with a loop
+    for note in note_list:
+        listbox.insert(END, f" {note[2]}   -  {note[1]}")
+    # configures listbox
+    listbox.configure(font=("arial", 14), background='#a3c1c3', width=52)
+    listbox.config(yscrollcommand=scrollbar.set)
+    scrollbar.config(command=listbox.yview)
+    # creates buttons
+    close_btn = tk.Button(note_win, text="Torna al menù precedente", command=lambda: note_win.destroy(), width=20, height=2, font=("arial", 12, "bold"), background='#468488')
+    close_btn.grid(column=0, row=3, pady=10, columnspan=2)
+# --------- END of notifications section -------------------------------------------------------------------------------
+
+
+# saves list as pdf
+def save_reportlab_pdf(file, button, title):
+    # creates a new PDF document with reportlab
+    doc = SimpleDocTemplate(f"{title}.pdf", pagesize=letter)
+    styles = getSampleStyleSheet()
+    # appends text list by a for loop
+    content = []
+    content.append(Paragraph(f"Elenco ordini:\n\n\n", styles['Heading2']))
+    for row in file:
+        idord = row[0]
+        code = row[1]
+        quantity = row[2]
+        ship = row[3]
+        content.append(Paragraph(f"{idord}   -   cod.{code}   -   quantità: {quantity}   -   shipping code:   {ship}\n", styles['Heading4']))
+    # saves document
+    doc.build(content)
+    button.configure(text="Lista salvata")
+
+
+# take in entry a product code and a quantity and updates the related product into db
+def update_quantity(q, code):
+    mycursor = mydb.cursor()
+    sql = "UPDATE products SET quantity = %s WHERE code = %s"
+    val = (str(q), code)
+    mycursor.execute(sql, val)
+    mydb.commit()
+    print("\nModifica effettuata.")
+
+
+# generates into db a notification in case of relevant events
+def notify(text):
+    mycursor = mydb.cursor()
+    sql = "INSERT INTO notifications (message, time) VALUES (%s, %s)"
+    val = (text, datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    mycursor.execute(sql, val)
+
+
+# starts main
+login_win = Window()
+
+
+# ----- defines LOGIN WINDOW line by line ------------------------------------------------------------------------------
+login_lbl = tk.Label(login_win, text="\nBenvenuto!\n\nInserisci le tue credenziali per accedere:\n", width=37, height=4, font=("arial", 16, "bold"), background='#468488')
+login_lbl.grid(column=0, row=0, columnspan=2)
+name_lbl = tk.Label(login_win, text="Inserisci username", width=15, height=3, font=("arial", 11, "bold"), background='#a3c1c3')
+name_lbl.grid(column=0, row=1, pady=15)
+name = tk.Entry(login_win, width=30)
+name.grid(column=1, row=1, ipady=3, pady=15)
+pw_lbl = tk.Label(login_win, text="Inserisci password", width=15, height=3, font=("arial", 11, "bold"), background='#a3c1c3')
+pw_lbl.grid(column=0, row=2)
+pw = tk.Entry(login_win, width=30, show='*')
+pw.grid(column=1, row=2, ipady=3)
+# creation of submit button that calls login with user and password as arguments and close its instance
+submit_btn = tk.Button(login_win, text="ACCEDI", fg="black", command=login, width=30, height=2, font=("arial", 12, "bold"), background='#74a3a6')
+submit_btn.grid(column=0, row=3, columnspan=3, pady=20, ipady=5)
+# ----- END of login window --------------------------------------------------------------------------------------------
+
+
+if __name__ == "__main__":
+    login_win.mainloop()
