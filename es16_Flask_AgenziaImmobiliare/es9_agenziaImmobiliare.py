@@ -24,7 +24,7 @@ from werkzeug.utils import secure_filename
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  password="pyThon23@_",
+  password="",
   database="agenziaImmobiliare"
 )
 
@@ -60,7 +60,7 @@ def save_cookies_db(utente, ultimo_accesso):
         connection = mysql.connector.connect(
             host='localhost',
             user='root',
-            password='pyThon23@_',
+            password='',
             database='agenziaImmobiliare'
         )
         cursor = connection.cursor()
