@@ -31,7 +31,7 @@ class Window(tk.Tk):
 def login():
     user = name.get()
     passw = pw.get()
-    # save the users list from database
+    # saves the users list from database
     mycursor = mydb.cursor()
     sql = "SELECT * FROM users"
     mycursor.execute(sql)
@@ -39,16 +39,16 @@ def login():
     # compares the entered credentials with the db list
     access = False
     for line in user_list:
-        # if the credentials are correct save the access in the database
+        # if the credentials are correct saves the access in the database
         if user == line[1] and passw == line[2]:
             access = True
             access_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             save_login(line[0], access_date)
-        # with a valid access, calls the index function with the name of the user as argument and close login window
+        # with a valid access, calls the index function with the name of the user as argument and closes login window
         if access:
             index(user)
             login_win.destroy()
-        # with invalid access display a popup message
+        # with an invalid access displays a popup message
         if not access:
             messagebox.showinfo("Errore", "Accesso negato, credenziali invalide.")
 
@@ -59,7 +59,7 @@ def save_login(user_id, date):
         connection = mysql.connector.connect(
             host='localhost',
             user='root',
-            password='pyThon23@_',
+            password='',
             database='warehouse'
         )
         cursor = connection.cursor()
@@ -76,7 +76,7 @@ def save_login(user_id, date):
             connection.close()
 
 
-# defines index menu
+# defines the index menu
 def index(current_user):
     index_win = Window()
     # ----- defines INDEX WINDOW line by line --------------------------------------------------------------------------
@@ -207,7 +207,7 @@ def product():
         subdel_btn.grid(column=0, row=2, pady=10, columnspan=3)
 
 
-        #delete a selected product from database
+        #deletes a selected product from database
         def db_delete():
             prod_to_del = delp.get()
             mycursor = mydb.cursor()
@@ -223,7 +223,7 @@ def product():
 
     # function to modify quantity of a selected product
     def mod_product():
-        # open a new window that ask the code of the product and new quantity
+        # opens a new window that asks the code of the product and the new quantity
         del_win = Window()
         tit_lbl = tk.Label(del_win, text="Inserisci dati prodotto.", width=35, height=2, font=("arial", 14, 'bold'), background='#74a3a6')
         tit_lbl.grid(column=0, row=0, columnspan=3)
@@ -257,7 +257,7 @@ def orders():
     # ----- END of order window ----------------------------------------------------------------------------------------
 
 
-    # print as pdf file a list of orders
+    # prints a list of orders and saves as pdf file
     def print_orders():
         # saves updated list of orders from database
         mycursor = mydb.cursor()
@@ -273,7 +273,7 @@ def orders():
             quantity = str(ord[2])
             ship = str(ord[3])
             order_string += string.join(f"{idord}  -  cod.{code}  -  quantità: {quantity}  -  shipping code: {ship}\n")
-        # open a new window to print and save list
+        # opens a new window to print and save the list
         print_win = Window()
         head_lbl = tk.Label(print_win, text="\nElenco ordini:\n", width=45, font=("arial", 14, "bold"), background='#a3c1c3')
         head_lbl.grid(column=0, row=0, columnspan=2)
@@ -288,7 +288,7 @@ def orders():
     # function to add a new order
     def add_order():
         shipping = random.randrange(10000, 99999)
-        # ----- open a new window with the entry form ------------------------------------------------------------------
+        # ----- opens a new window with the entry form ------------------------------------------------------------------
         insord_win = Window()
         tit_lbl = tk.Label(insord_win, text="Inserisci dati ordine.", width=35, height=2, font=("arial", 14, 'bold'), background='#74a3a6')
         tit_lbl.grid(column=0, row=0, columnspan=3)
@@ -366,7 +366,7 @@ def notifications():
     # adds header
     lbl = tk.Label(note_win, text=f"Elenco delle notifiche", height=2, width=50, font=("arial", 15, 'bold'), background='#18656a')
     lbl.grid(column=0, row=0, columnspan=2, ipady=1)
-    # compiles the list printing rows in the box with a loop
+    # compiles the list printing the rows in the box with a loop
     for note in note_list:
         listbox.insert(END, f" {note[2]}   -  {note[1]}")
     # configures listbox
@@ -379,7 +379,7 @@ def notifications():
 # --------- END of notifications section -------------------------------------------------------------------------------
 
 
-# saves list as pdf
+# saves the list as pdf
 def save_reportlab_pdf(file, button, title):
     # creates a new PDF document with reportlab
     doc = SimpleDocTemplate(f"{title}.pdf", pagesize=letter)
@@ -398,7 +398,7 @@ def save_reportlab_pdf(file, button, title):
     button.configure(text="Lista salvata")
 
 
-# take in entry a product code and a quantity and updates the related product into db
+# takes in entry a product code and a quantity and updates the related product into db
 def update_quantity(q, code):
     mycursor = mydb.cursor()
     sql = "UPDATE products SET quantity = %s WHERE code = %s"
@@ -431,7 +431,7 @@ pw_lbl = tk.Label(login_win, text="Inserisci password", width=15, height=3, font
 pw_lbl.grid(column=0, row=2)
 pw = tk.Entry(login_win, width=30, show='*')
 pw.grid(column=1, row=2, ipady=3)
-# creation of submit button that calls login with user and password as arguments and close its instance
+# creates a submit button that calls login with user and password as arguments and closes its instance
 submit_btn = tk.Button(login_win, text="ACCEDI", fg="black", command=login, width=30, height=2, font=("arial", 12, "bold"), background='#74a3a6')
 submit_btn.grid(column=0, row=3, columnspan=3, pady=20, ipady=5)
 # ----- END of login window --------------------------------------------------------------------------------------------
